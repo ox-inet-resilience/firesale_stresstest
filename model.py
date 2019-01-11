@@ -36,6 +36,7 @@ from contracts import AssetType, AssetCollateral
 
 
 pylab.ion()
+pylab.rcParams['figure.figsize'] = (7.0, 4.8)
 pylab.style.use('ggplot')
 # For reproducibility
 random.seed(1337)
@@ -160,7 +161,6 @@ eocs = run_sim_set(price_impacts, set_pi)
 pylab.plot(100 * price_impacts, eocs)
 pylab.xlabel('Price impact (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
-# -
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
 # ## Effect of initial shock on systemic risk
@@ -194,4 +194,3 @@ pylab.plot(100 * initial_shocks, eocs, label='Leverage targeting')
 pylab.xlabel('Initial shock (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
 pylab.legend()
-# -
