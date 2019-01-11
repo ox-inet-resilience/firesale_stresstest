@@ -138,14 +138,16 @@ def run_sim_set(params, apply_param):
         eocs.append(eoc)
     return eocs
 
-# + {"slideshow": {"slide_type": "slide"}}
+# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
 # # Simulations
 # 1. Effect of price impact on systemic risk
 # 2. Effect of initial shock on systemic risk
 # 3. Difference between leverage targeting and threshold model (Cont-Schaanning 2016)
 
-# + {"slideshow": {"slide_type": "slide"}}
+# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
 # ## Effect of price impact on systemic risk
+
+# + {"slideshow": {"slide_type": "-"}}
 pylab.figure()
 price_impacts = np.linspace(0, 0.1, 21)
 
@@ -158,9 +160,12 @@ pylab.plot(100 * price_impacts, eocs)
 pylab.xlabel('Price impact (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
 pylab.show()
+# -
 
-# + {"slideshow": {"slide_type": "slide"}}
+# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
 # ## Effect of initial shock on systemic risk
+
+# + {"slideshow": {"slide_type": "-"}}
 pylab.figure()
 Parameters.PRICE_IMPACTS = defaultdict(lambda: 0.1)
 initial_shocks = np.linspace(0, 0.3, 21)
@@ -175,14 +180,14 @@ pylab.xlabel('Initial shock (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
 pylab.show()
 
-# + {"slideshow": {"slide_type": "slide"}}
+# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
 # ## Difference between leverage targeting and threshold model (Cont-Schaanning 2016)
 
+# + {"slideshow": {"slide_type": "-"}}
 # Threshold model (same as previous simulation)
 pylab.figure()
 eocs = run_sim_set(initial_shocks, set_shock)
 pylab.plot(100 * initial_shocks, eocs, label='Threshold model')
-
 # Leverage targeting
 Parameters.BANK_LEVERAGE_BUFFER = 1
 eocs = run_sim_set(initial_shocks, set_shock)
@@ -191,3 +196,4 @@ pylab.xlabel('Initial shock (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
 pylab.legend()
 pylab.show()
+# -
