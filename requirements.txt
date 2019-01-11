@@ -1,0 +1,5 @@
+matplotlib
+numpy
+jupytext
+RISE
+git+https://github.com/rht/py-destilledESL#egg=py-destilledESL
