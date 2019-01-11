@@ -35,6 +35,7 @@ from agents import Bank, AssetMarket
 from contracts import AssetType, AssetCollateral
 
 
+pylab.ion()
 pylab.style.use('ggplot')
 # For reproducibility
 random.seed(1337)
@@ -159,7 +160,6 @@ eocs = run_sim_set(price_impacts, set_pi)
 pylab.plot(100 * price_impacts, eocs)
 pylab.xlabel('Price impact (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
-pylab.show()
 # -
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
@@ -178,7 +178,6 @@ eocs = run_sim_set(initial_shocks, set_shock)
 pylab.plot(100 * initial_shocks, eocs)
 pylab.xlabel('Initial shock (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
-pylab.show()
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
 # ## Difference between leverage targeting and threshold model (Cont-Schaanning 2016)
@@ -195,5 +194,4 @@ pylab.plot(100 * initial_shocks, eocs, label='Leverage targeting')
 pylab.xlabel('Initial shock (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
 pylab.legend()
-pylab.show()
 # -
