@@ -32,7 +32,7 @@ import numpy as np
 from economicsl import Simulation
 
 from agents import Bank, AssetMarket
-from contracts import AssetType, AssetCollateral
+from contracts import AssetType
 
 
 pylab.ion()
@@ -65,10 +65,9 @@ class Model:
     def get_time(self):
         return self.simulation.get_time()
 
-    def devalueCommonAsset(self, assetType, priceLost):
-        """ devaluates a common asset for all agents """
+    def update_asset_price(self, assetType):
         for agent in self.allAgents:
-            agent.devalue_asset_collateral_of_type(assetType, priceLost)
+            agent.update_asset_price(assetType)
 
     def apply_initial_shock(self, assetType, fraction):
         """ creates an initial shock, by decreasing
@@ -76,29 +75,7 @@ class Model:
         """
         new_price = self.assetMarket.get_price(assetType) * (1.0 - fraction)
         self.assetMarket.set_price(assetType, new_price)
-
-        for agent in self.allAgents:
-            for a in agent.get_ledger().get_assets_of_type(AssetCollateral):
-                if a.get_asset_type() == assetType:
-                    a.update_price()
-
-    def run_schedule(self):
-        self.apply_initial_shock(
-            Parameters.ASSET_TO_SHOCK,
-            Parameters.INITIAL_SHOCK)
-        output = [0]
-        while self.get_time() < Parameters.SIMULATION_TIMESTEPS:
-            self.simulation.advance_time()
-            self.simulation.bank_defaults_this_round = 0
-            random.shuffle(self.allAgents)
-            for agent in self.allAgents:
-                agent.step()
-            self.assetMarket.clear_the_market()
-            for agent in self.allAgents:
-                agent.act()
-            # output.append(self.simulation.bank_defaults_this_round)
-            output.append(sum(self.assetMarket.totalAmountsSold.values()))
-        return output
+        self.update_asset_price(assetType)
 
     def initialize(self):
         self.parameters = Parameters
@@ -125,6 +102,24 @@ class Model:
                 assets=(cash, corp_bonds, gov_bonds, other_asset),
                 liabilities=(loan, other_liability))
             self.allAgents.append(bank)
+
+    def run_schedule(self):
+        self.apply_initial_shock(
+            Parameters.ASSET_TO_SHOCK,
+            Parameters.INITIAL_SHOCK)
+        output = [0]
+        while self.get_time() < Parameters.SIMULATION_TIMESTEPS:
+            self.simulation.advance_time()
+            self.simulation.bank_defaults_this_round = 0
+            random.shuffle(self.allAgents)
+            for agent in self.allAgents:
+                agent.step()
+            self.assetMarket.clear_the_market()
+            for agent in self.allAgents:
+                agent.act()
+            # output.append(self.simulation.bank_defaults_this_round)
+            output.append(sum(self.assetMarket.totalAmountsSold.values()))
+        return output
 
 
 # + {"slideshow": {"slide_type": "slide"}}

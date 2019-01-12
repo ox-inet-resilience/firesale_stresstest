@@ -3,7 +3,7 @@ import numpy as np
 
 from economicsl import Agent
 
-from contracts import AssetCollateral, Other, Loan, AssetType
+from contracts import Tradable, Other, Loan, AssetType
 from actions import PayLoan, SellAsset
 
 
@@ -59,13 +59,13 @@ class Bank(Agent):
 
         # Asset side
         self.add_cash(cash)
-        cb_contract = AssetCollateral(
+        cb_contract = Tradable(
             self, AssetType.CORPORATE_BONDS,
             assetMarket, corp_bonds)
         self.add(cb_contract)
         assetMarket.total_quantities[AssetType.CORPORATE_BONDS] += corp_bonds
 
-        gb_contract = AssetCollateral(
+        gb_contract = Tradable(
             self, AssetType.GOV_BONDS,
             assetMarket, gov_bonds)
         self.add(gb_contract)
@@ -84,6 +84,16 @@ class Bank(Agent):
 
     def is_insolvent(self):
         return self.leverageConstraint.is_insolvent()
+
+    def get_available_actions(self):
+        eligibleActions = defaultdict(list)
+        ldg = self.get_ledger()
+        for contract in (ldg.get_all_assets() + ldg.get_all_liabilities()):
+            if contract.is_eligible(self):
+                action = contract.get_action(self)
+                eligibleActions[type(action)].append(action)
+
+        return eligibleActions
 
     def choose_actions(self):
         # 0) If I'm insolvent, default.
@@ -135,16 +145,6 @@ class Bank(Agent):
                 action.perform()
         return amount
 
-    def get_available_actions(self):
-        eligibleActions = defaultdict(list)
-        ldg = self.get_ledger()
-        for contract in (ldg.get_all_assets() + ldg.get_all_liabilities()):
-            if contract.is_eligible(self):
-                action = contract.get_action(self)
-                eligibleActions[type(action)].append(action)
-
-        return eligibleActions
-
     def set_initial_values(self):
         self.get_ledger().set_initial_values()
 
@@ -168,8 +168,8 @@ class Bank(Agent):
         else:
             return 0.0
 
-    def devalue_asset_collateral_of_type(self, assetType, priceLost):
-        for asset in self.get_ledger().get_assets_of_type(AssetCollateral):
+    def update_asset_price(self, assetType):
+        for asset in self.get_ledger().get_assets_of_type(Tradable):
             if asset.get_asset_type() == assetType:
                 asset.update_price()
 
@@ -199,7 +199,7 @@ class AssetMarket:
             newPrice = self.prices[atype]
             priceLost = self.oldPrices[atype] - newPrice
             if priceLost > 0:
-                self.model.devalueCommonAsset(atype, priceLost)
+                self.model.update_asset_price(atype)
             self.totalAmountsSold[atype] += v
         self.amountsSold = defaultdict(np.longdouble)
 

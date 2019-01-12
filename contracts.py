@@ -43,8 +43,8 @@ class Contract:
         return ''
 
 
-class AssetCollateral(Contract):
-    ctype = 'AssetCollateral'
+class Tradable(Contract):
+    ctype = 'Tradable'
 
     def __init__(self, assetParty, assetType, assetMarket, quantity):
         super().__init__(assetParty, None)
