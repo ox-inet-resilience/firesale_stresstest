@@ -12,12 +12,7 @@
 #     name: python3
 # ---
 
-from actions import SellAsset, PayLoan, eps
-
-
-class AssetType:
-    CORPORATE_BONDS = 1
-    GOV_BONDS = 2
+from actions import SellAsset, PayLoan
 
 
 class Contract:
@@ -43,6 +38,11 @@ class Contract:
         return ''
 
 
+class AssetType:
+    CORPORATE_BONDS = 1
+    GOV_BONDS = 2
+
+
 class Tradable(Contract):
     ctype = 'Tradable'
 
@@ -59,16 +59,6 @@ class Tradable(Contract):
 
     def is_eligible(self, me):
         return self.quantity > self.putForSale_
-
-    def clear_sale(self, quantity_sold):
-        quantity_sold = min(quantity_sold, self.quantity)
-        old_price = self.assetMarket.oldPrices[self.assetType]
-        self.quantity -= quantity_sold
-        self.putForSale_ -= quantity_sold
-        # Sell the asset at the mid-point price
-        value_sold = quantity_sold * (self.price + old_price) / 2
-        if value_sold >= eps:
-            self.assetParty.add_cash(value_sold)
 
     def get_market_price(self):
         return self.assetMarket.get_price(self.assetType)

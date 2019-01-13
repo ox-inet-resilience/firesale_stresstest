@@ -4,7 +4,7 @@ import numpy as np
 from economicsl import Agent
 
 from contracts import Tradable, Other, Loan, AssetType
-from actions import PayLoan, SellAsset
+from actions import PayLoan, SellAsset, eps
 
 
 class Order:
@@ -13,7 +13,15 @@ class Order:
         self.quantity = quantity
 
     def settle(self):
-        self.asset.clear_sale(self.quantity)
+        # clear sale
+        quantity_sold = min(self.asset.quantity, self.quantity)
+        old_price = self.asset.assetMarket.oldPrices[self.asset.assetType]
+        self.asset.quantity -= quantity_sold
+        self.asset.putForSale_ -= quantity_sold
+        # Sell the asset at the mid-point price
+        value_sold = quantity_sold * (self.asset.price + old_price) / 2
+        if value_sold >= eps:
+            self.asset.assetParty.add_cash(value_sold)
 
 
 class DefaultException(Exception):
