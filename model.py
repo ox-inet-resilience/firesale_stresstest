@@ -31,7 +31,8 @@ import numpy as np
 
 from economicsl import Simulation
 
-from institutions import Bank, AssetMarket
+from institutions import Bank
+from markets import AssetMarket
 from contracts import AssetType
 
 
