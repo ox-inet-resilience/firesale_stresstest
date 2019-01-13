@@ -2,12 +2,9 @@ from collections import defaultdict
 
 from economicsl import Agent
 
-from contracts import (
-    Tradable, Other, Loan, AssetType,
-    PayLoan, SellAsset,
-)
+from contracts import Tradable, Other, Loan, AssetType
 from constraints import BankLeverageConstraint, DefaultException
-from behaviours import do_delever
+from behaviours import do_delever, sell_assets_proportionally
 
 
 class Bank(Agent):
@@ -62,7 +59,7 @@ class Bank(Agent):
     def trigger_default(self):
         self.do_trigger_default = False
 
-        self.sell_assets_proportionally()
+        sell_assets_proportionally(self)
 
     def is_insolvent(self):
         # In general, this would include the solvency condition
@@ -111,33 +108,12 @@ class Bank(Agent):
             # This is for record keeping.
             self.simulation.bank_defaults_this_round += 1
 
-    def perform_proportionally(self, actions, amount=None):
-        # This is a common pattern shared by sell assets and
-        # pay loan.
-        maximum = sum(a.get_max() for a in actions)
-        if amount is None:
-            amount = maximum
-        if (maximum <= 0) or (amount <= 0):
-            return 0.0
-        amount = min(amount, maximum)
-        for action in actions:
-            action.set_amount(action.get_max() * amount / maximum)
-            if action.get_amount() > 0:
-                action.perform()
-        return amount
-
-    def pay_off_liabilities(self, amount):
-        payLoanActions = self.get_all_actions_of_type(PayLoan)
-        return self.perform_proportionally(payLoanActions, amount)
-
-    def sell_assets_proportionally(self, amount=None):
-        sellAssetActions = self.get_all_actions_of_type(SellAsset)
-        return self.perform_proportionally(sellAssetActions, amount)
-
     def get_all_actions_of_type(self, actionType):
         return self.availableActions[actionType]
 
     def update_asset_price(self, assetType):
+        # design choice: accounting is done by the institution itself,
+        # not by the market.
         for asset in self.get_ledger().get_assets_of_type(Tradable):
             if asset.get_asset_type() == assetType:
                 asset.update_price()
