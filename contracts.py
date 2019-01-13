@@ -60,13 +60,6 @@ class Tradable(Contract):
     def is_eligible(self, me):
         return self.quantity > self.putForSale_
 
-    def put_for_sale(self, quantity):
-        if quantity <= eps:
-            # do not perform if quantity is effectively 0
-            return
-        self.putForSale_ += quantity
-        self.assetMarket.put_for_sale(self, quantity)
-
     def clear_sale(self, quantity_sold):
         quantity_sold = min(quantity_sold, self.quantity)
         old_price = self.assetMarket.oldPrices[self.assetType]
@@ -108,17 +101,8 @@ class Loan(Contract):
         super().__init__(assetParty, liabilityParty)
         self.principal = principal
 
-    def pay_loan(self, amount):
-        amount = min(amount, self.get_value())
-        self.liabilityParty.pay_liability(amount, self)
-        self.liabilityParty.get_ledger().subtract_cash(amount)
-        self.reduce_principal(amount)
-
     def reduce_principal(self, amount):
-        value = self.get_value()
-        assert (value - amount) >= -eps, (value, amount)
         self.principal -= amount
-        self.principal = abs(self.principal)  # round off floating error
 
     def get_action(self, me):
         return PayLoan(self.liabilityParty, self)

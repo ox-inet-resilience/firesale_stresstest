@@ -10,10 +10,13 @@ class SellAsset(Action):
     def perform(self):
         if self.asset.price <= eps:
             return
-        quantityToSell = self.get_amount() / self.asset.price
-        if abs(quantityToSell) <= eps:
+        quantity = self.get_amount() / self.asset.price
+        if abs(quantity) <= eps:
+            # do not perform if quantity is effectively 0
             return
-        self.asset.put_for_sale(quantityToSell)
+        # put for sale
+        self.asset.putForSale_ += quantity
+        self.asset.assetMarket.put_for_sale(self.asset, quantity)
 
     def get_max(self):
         available_qty = self.asset.quantity - self.asset.putForSale_
@@ -26,7 +29,10 @@ class PayLoan(Action):
         self.loan = loan
 
     def perform(self):
-        self.loan.pay_loan(self.get_amount())
+        amount = min(self.get_amount(), self.loan.get_value())
+        self.loan.liabilityParty.pay_liability(amount, self.loan)
+        self.loan.liabilityParty.get_ledger().subtract_cash(amount)
+        self.loan.reduce_principal(amount)
 
     def get_max(self):
         return self.loan.get_value()
