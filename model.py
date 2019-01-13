@@ -145,6 +145,7 @@ def run_sim_set(params, apply_param):
 # Helper function
 def make_plots(eocs, solds, xarray, xlabel):
     pylab.figure()
+    pylab.ylim(-0.01, 1.05)
     pylab.plot(xarray, eocs)
     pylab.xlabel(xlabel)
     pylab.ylabel('Systemic risk $\\mathbb{E}$')
@@ -198,6 +199,7 @@ Parameters.BANK_LEVERAGE_BUFFER = 1
 eocs2, solds2 = run_sim_set(initial_shocks, set_shock)
 
 pylab.figure()
+pylab.ylim(-0.01, 1.05)
 pylab.plot(100 * initial_shocks, eocs1, label='Threshold model')
 pylab.plot(100 * initial_shocks, eocs2, label='Leverage targeting')
 pylab.xlabel('Initial shock (%)')
