@@ -2,12 +2,14 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rht/bank_contagion/master)
 
-Note: This is a simplified version that only retains a fire sale contagion model, but retains the generality of the comprehensive system-wide stress test model.
+Note: This is a simplified version that only retains a fire sale contagion
+model, but retains much of the generality of the comprehensive system-wide
+stress test model.
 
 By: J. Doyne Farmer, Alissa M. Kleinnijenhuis, Paul Nahai-Williamson, and Thom Wetzer.
 
 The model.py file is a hybrid source code - Jupyter notebook.
-There are 3 experiments so far.
+There are 3 illustrative experiments:
 1. Effect of price impact on systemic risk
 2. Effect of initial shock on systemic risk
 3. Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
@@ -41,7 +43,7 @@ Banks:
 Asset market:
 - Contains an orderbook
 - Price impact
-  - ![price impact formula](https://latex.codecogs.com/svg.latex?p'&space;=&space;p&space;\exp{\left[-\beta&space;\frac{\mathrm{sold}}{(\mathrm{market\,cap})}\right]})
+  - ![price impact formula](https://latex.codecogs.com/svg.latex?p'&space;=&space;p&space;\exp{\left[-\beta&space;\frac{\mathrm{sold}}{(\mathrm{market\%2Ccap})}\right]})
   - β is chosen such that when 10% of the market cap is sold, the price drops by 10%.
 
 ### Behaviours
