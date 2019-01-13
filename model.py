@@ -16,7 +16,7 @@
 # ---
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# # Bank contagion
+# # Foundations for system-wide stress testing: overlapping portfolio contagion
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
 # ## Model initialization
@@ -116,7 +116,13 @@ class Model:
         while self.get_time() < Parameters.SIMULATION_TIMESTEPS:
             self.simulation.advance_time()
             self.simulation.bank_defaults_this_round = 0
+            # this is an extra safeguard to ensure order independence
             random.shuffle(self.allAgents)
+            # In most agent-based models, there is only step().  We
+            # split it into step() and act() phases to ensure order
+            # independence in some conditions. In the full model,
+            # trigger_default() may contain a behavioural unit that
+            # does pull funding.
             for agent in self.allAgents:
                 agent.step()
             self.assetMarket.clear_the_market()
@@ -199,6 +205,8 @@ make_plots(eocs, solds, 100 * initial_shocks, 'Initial shock (%)')
 # Threshold model (same as previous simulation)
 eocs1, solds1 = run_sim_set(initial_shocks, set_shock)
 # Leverage targeting
+# This (100% leverage buffer) makes the banks to always delever to
+# reach leverage target.
 Parameters.BANK_LEVERAGE_BUFFER = 1
 eocs2, solds2 = run_sim_set(initial_shocks, set_shock)
 
