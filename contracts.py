@@ -15,7 +15,17 @@
 from actions import SellAsset, PayLoan
 
 
+# 1. This is the generic Contract shared by all the 3 contracts definition
+#    used in this model.
+# 2. The 2 key functions are `get_action` and `is_eligible`. The latter
+#    being used to filter whether the contract will be acted upon by an
+#    agent.
+# 3. For modularity purpose, actions are separated from the contracts
+#    definition. So that they can be swapped with other types of action
+#    whenever necessary.
 class Contract:
+    # ctype is defined to group very similar contracts together,
+    # e.g. Loan and BailinableLoan have the same ctype 'Loan'.
     ctype = 'Contract'
 
     def __init__(self, assetParty, liabilityParty):
@@ -50,8 +60,12 @@ class Tradable(Contract):
         super().__init__(assetParty, None)
         self.assetType = assetType
         self.assetMarket = assetMarket
+        # `Tradable` has a price which may change over time.
         self.price = self.get_market_price()
         self.quantity = quantity
+        # This is crucial to ensure order independence.
+        # Amount being put for sale is added to this variable before
+        # being cleared by AssetMarket in a separate turn.
         self.putForSale_ = 0.0
 
     def get_action(self, me):
@@ -64,6 +78,7 @@ class Tradable(Contract):
         return self.assetMarket.get_price(self.assetType)
 
     def update_price(self):
+        # Price has to be updated manually.
         self.price = self.get_market_price()
 
     def get_asset_type(self):
@@ -73,6 +88,7 @@ class Tradable(Contract):
         return self.quantity * self.price
 
 
+# This is for illiquid contracts at either asset or liability side.
 class Other(Contract):
     ctype = 'Other'
 
@@ -84,6 +100,8 @@ class Other(Contract):
         return self.principal
 
 
+# In general, loan is between banks or external nodes.
+# In this model we are simplifying it to be just to external nodes.
 class Loan(Contract):
     ctype = 'Loan'
 
