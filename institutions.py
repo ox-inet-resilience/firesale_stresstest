@@ -37,7 +37,9 @@ class Bank(Agent):
             assetMarket, corp_bonds)
         # Add the contract to balance sheet
         self.add(cb_contract)
-        # Register the contract amount to asset market
+        # Register the contract amount to asset market. This is to be able to
+        # compute the price impact, which is based on the total market
+        # capitalisation, later.
         assetMarket.total_quantities[AssetType.CORPORATE_BONDS] += corp_bonds
 
         # a2. Goverment bonds
