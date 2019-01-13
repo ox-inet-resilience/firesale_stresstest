@@ -139,7 +139,7 @@ def run_sim_set(params, apply_param):
         # Only use the final element of total_sold (i.e. at the
         # end of the simulation).
         total_solds.append(total_sold[-1])
-    return eocs, total_solds
+    return eocs, np.array(total_solds)
 
 
 # Helper function
@@ -150,7 +150,7 @@ def make_plots(eocs, solds, xarray, xlabel):
     pylab.ylabel('Systemic risk $\\mathbb{E}$')
 
     pylab.figure()
-    pylab.plot(xarray, solds)
+    pylab.plot(xarray, solds / 1000)
     pylab.xlabel(xlabel)
     pylab.ylabel('Total firesale (euro bln)')
 
@@ -205,8 +205,8 @@ pylab.ylabel('Systemic risk $\\mathbb{E}$')
 pylab.legend()
 
 pylab.figure()
-pylab.plot(100 * initial_shocks, solds1, label='Threshold model')
-pylab.plot(100 * initial_shocks, solds2, label='Leverage targeting')
+pylab.plot(100 * initial_shocks, solds1 / 1000, label='Threshold model')
+pylab.plot(100 * initial_shocks, solds2 / 1000, label='Leverage targeting')
 pylab.xlabel('Initial shock (%)')
 pylab.ylabel('Total firesale (euro bln)')
 pylab.legend()
