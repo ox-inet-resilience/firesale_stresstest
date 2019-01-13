@@ -1,3 +1,7 @@
+def do_nothing(bank):
+    pass
+
+
 def do_delever(bank):
     balance = bank.get_cash_()
     # 1. Pay off liabilities to delever
