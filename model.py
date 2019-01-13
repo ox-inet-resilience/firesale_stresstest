@@ -46,7 +46,10 @@ NBANKS = 48
 
 
 def get_extent_of_systemic_event(out):
-    return sum(out) / NBANKS
+    eose = sum(out) / NBANKS
+    if eose < 0.05:
+        return 0
+    return eose
 
 
 class Parameters:
