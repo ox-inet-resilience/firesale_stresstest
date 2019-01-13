@@ -7,6 +7,7 @@ from contracts import (
     PayLoan, SellAsset,
 )
 from constraints import BankLeverageConstraint, DefaultException
+from behaviours import do_delever
 
 
 class Bank(Agent):
@@ -85,17 +86,7 @@ class Bank(Agent):
         if self.is_insolvent():
             raise DefaultException(self, 'SOLVENCY')
 
-        balance = self.get_cash_()
-        # 1. Pay off liabilities to delever
-        deLever = min(balance, self.leverageConstraint.get_amount_to_delever())
-        if deLever > 0:
-            deLever = self.pay_off_liabilities(deLever)
-            balance -= deLever
-
-        # 2. Raise liquidity to delever later
-        if balance < deLever:
-            amount_to_raise = deLever - balance
-            self.sell_assets_proportionally(amount_to_raise)
+        do_delever(self)
 
     def step(self):
         if self.do_trigger_default:
