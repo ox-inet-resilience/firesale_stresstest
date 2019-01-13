@@ -14,3 +14,6 @@ There are 3 experiments so far.
 
 References:
 1. Cont, Rama, and Eric Schaanning. "Fire sales, indirect contagion and systemic stress testing." (2017).
+   https://dx.doi.org/10.2139/ssrn.2541114
+2. Cifuentes, R., Ferrucci, G. and Shin, H. S. (2005), ‘Liquidity risk and contagion’, Journal of the European Economic Association 3(2-3), 556–566.
+   https://dx.doi.org/10.2139/ssrn.824166

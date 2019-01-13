@@ -73,7 +73,7 @@ class AssetMarket:
 
         fraction_sold = amountSold / total
 
-        # See Greenwood 2012 for the choice of the price impact
+        # See Cifuentes 2005 for the choice of the price impact
         # function.
         # Exponential price impact. `beta` is chosen such that
         # when 10% of the market cap is sold, the price drops by
