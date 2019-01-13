@@ -56,7 +56,7 @@ class Parameters:
     ASSET_TO_SHOCK = AssetType.GOV_BONDS
     INITIAL_SHOCK = 0.2
     SIMULATION_TIMESTEPS = 6
-    PRICE_IMPACTS = defaultdict(lambda: 0.05)
+    PRICE_IMPACTS = defaultdict(lambda: 0.01)
 
 # + {"slideshow": {"slide_type": "subslide"}}
 class Model:
@@ -179,7 +179,7 @@ make_plots(eocs, solds, 100 * price_impacts, 'Price impact (%)')
 # ## 2. Effect of initial shock on systemic risk
 
 # + {"slideshow": {"slide_type": "-"}}
-Parameters.PRICE_IMPACTS = defaultdict(lambda: 0.05)
+Parameters.PRICE_IMPACTS = defaultdict(lambda: 0.01)
 initial_shocks = np.linspace(0, 0.3, 21)
 
 def set_shock(shock):
