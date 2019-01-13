@@ -133,17 +133,22 @@ class Bank(Agent):
         amount = min(self.get_cash_(), amount)
         self.get_ledger().pay_liability(amount, loan)
 
-    def pay_off_liabilities(self, amount):
-        payLoanActions = self.get_all_actions_of_type(PayLoan)
-        m = sum([a.get_max() for a in payLoanActions])
-        if not (amount > 0):
-                return 0.0
-
-        for action in payLoanActions:
-            action.set_amount(action.get_max() * amount / m)
+    def perform_proportionally(self, actions, amount=None):
+        maximum = sum(a.get_max() for a in actions)
+        if amount is None:
+            amount = maximum
+        if (maximum <= 0) or (amount <= 0):
+            return 0.0
+        amount = min(amount, maximum)
+        for action in actions:
+            action.set_amount(action.get_max() * amount / maximum)
             if action.get_amount() > 0:
                 action.perform()
         return amount
+
+    def pay_off_liabilities(self, amount):
+        payLoanActions = self.get_all_actions_of_type(PayLoan)
+        return self.perform_proportionally(payLoanActions, amount)
 
     def set_initial_values(self):
         self.get_ledger().set_initial_values()
@@ -153,20 +158,7 @@ class Bank(Agent):
 
     def sell_assets_proportionally(self, amount=None):
         sellAssetActions = self.get_all_actions_of_type(SellAsset)
-        totalSellableAssets = sum(a.get_max() for a in sellAssetActions)
-        if amount is None:
-            amount = totalSellableAssets
-        if amount > 0:
-            amount = min(totalSellableAssets, amount)
-
-            for action in sellAssetActions:
-                action.set_amount(
-                    action.get_max() * amount / totalSellableAssets)
-                action.perform()
-
-            return amount
-        else:
-            return 0.0
+        return self.perform_proportionally(sellAssetActions, amount)
 
     def update_asset_price(self, assetType):
         for asset in self.get_ledger().get_assets_of_type(Tradable):
