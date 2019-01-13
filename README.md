@@ -10,7 +10,7 @@ The model.py file is a hybrid source code - Jupyter notebook.
 There are 3 experiments so far.
 1. Effect of price impact on systemic risk
 2. Effect of initial shock on systemic risk
-3. Difference between leverage targeting and threshold model (Cont-Schaanning 2016)
+3. Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
 
 References:
 1. Cont, Rama, and Eric Schaanning. "Fire sales, indirect contagion and systemic stress testing." (2017).

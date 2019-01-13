@@ -139,7 +139,7 @@ def run_sim_set(params, apply_param):
 # # Simulations
 # 1. Effect of price impact on systemic risk
 # 2. Effect of initial shock on systemic risk
-# 3. Difference between leverage targeting and threshold model (Cont-Schaanning 2016)
+# 3. Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
 # ## Effect of price impact on systemic risk
@@ -175,7 +175,7 @@ pylab.xlabel('Initial shock (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# ## Difference between leverage targeting and threshold model (Cont-Schaanning 2016)
+# ## Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
 
 # + {"slideshow": {"slide_type": "-"}}
 # Threshold model (same as previous simulation)
