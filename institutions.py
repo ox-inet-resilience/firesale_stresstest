@@ -3,8 +3,10 @@ import numpy as np
 
 from economicsl import Agent
 
-from contracts import Tradable, Other, Loan, AssetType
-from actions import PayLoan, SellAsset, eps
+from contracts import (
+    Tradable, Other, Loan, AssetType,
+    PayLoan, SellAsset, eps,
+)
 from constraints import BankLeverageConstraint, DefaultException
 
 
