@@ -1,5 +1,6 @@
-# List of strategies that consists of behavioural units
 from contracts import PayLoan, SellAsset
+
+# List of strategies that consists of behavioural units
 
 def do_nothing(bank):
     pass
