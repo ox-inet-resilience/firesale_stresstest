@@ -1,6 +1,7 @@
 from economicsl import Action
 eps = 1e-9
 
+# All `Action` must have `perform()` and `get_max()`
 
 class SellAsset(Action):
     def __init__(self, me, asset):
@@ -29,8 +30,9 @@ class PayLoan(Action):
         self.loan = loan
 
     def perform(self):
+        # for safety measure: once again truncate the amount to not exceed
+        # the value of the loan
         amount = min(self.get_amount(), self.loan.get_value())
-        self.loan.liabilityParty.pay_liability(amount, self.loan)
         self.loan.liabilityParty.get_ledger().subtract_cash(amount)
         self.loan.reduce_principal(amount)
 
