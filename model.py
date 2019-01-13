@@ -51,8 +51,8 @@ def get_extent_of_systemic_event(out):
 
 class Parameters:
     BANK_LEVERAGE_MIN = 0.03
-    BANK_LEVERAGE_BUFFER = 0.05
-    BANK_LEVERAGE_TARGET = 0.07
+    BANK_LEVERAGE_BUFFER = 0.04
+    BANK_LEVERAGE_TARGET = 0.05
     ASSET_TO_SHOCK = AssetType.GOV_BONDS
     INITIAL_SHOCK = 0.2
     SIMULATION_TIMESTEPS = 6
