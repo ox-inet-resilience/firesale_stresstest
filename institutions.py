@@ -56,6 +56,9 @@ class Bank(Agent):
         # l2. Other liability
         self.add(Other(None, self, other_liability))
 
+    # trigger_default, is_insolvent, get_available_actions, choose_actions,
+    # step, act, get_all_actions_of_type are standard functions of the
+    # institutions in the full model.
     def trigger_default(self):
         self.do_trigger_default = False
 
@@ -100,9 +103,8 @@ class Bank(Agent):
         except DefaultException:
             # In general, when a bank defaults, its default treatment
             # may be order-dependent if executed immediately (e.g. when
-            # it performs bilateral pull funding in the full version of
-            # the model), so it is best to delay it to the step()
-            # stage.
+            # it performs bilateral pull funding in the full model), so
+            # it is best to delay it to the step() stage.
             self.do_trigger_default = True
             self.alive = False
             # This is for record keeping.
