@@ -67,7 +67,8 @@ class Bank(Agent):
         sell_assets_proportionally(self)
 
     def is_insolvent(self):
-        # In general, this would include the solvency condition
+        # This has a particular implementation of just taking leverage ratio
+        # into account. In general, this would include the solvency condition
         # from risk-weighted capital ratio.
         return self.leverageConstraint.is_insolvent()
 
@@ -91,6 +92,10 @@ class Bank(Agent):
         do_delever(self)
 
     def step(self):
+        # In most agent-based models, there is only step().
+        # We split it into step() and act() phases to ensure order independence
+        # in some conditions. In the full model, trigger_default() may contain
+        # a behavioural unit that does pull funding.
         if self.do_trigger_default:
             self.trigger_default()
         if self.alive:

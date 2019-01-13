@@ -13,6 +13,7 @@
 # ---
 
 from economicsl import Action
+# floating point tolerance, ~0.001 EUR
 eps = 1e-9
 
 # All `Action` must have `perform()` and `get_max()`
@@ -29,7 +30,8 @@ class SellAsset(Action):
         if abs(quantity) <= eps:
             # do not perform if quantity is effectively 0
             return
-        # put for sale
+        # put for sale. This is not sold immediately to ensure order
+        # independence.
         self.asset.putForSale_ += quantity
         self.asset.assetMarket.put_for_sale(self.asset, quantity)
 
@@ -64,7 +66,8 @@ class PayLoan(Action):
 #    whenever necessary.
 class Contract:
     # ctype is defined to group very similar contracts together,
-    # e.g. Loan and BailinableLoan have the same ctype 'Loan'.
+    # e.g. Loan and BailinableLoan are different classes but both have the same
+    # ctype 'Loan'.
     ctype = 'Contract'
 
     def __init__(self, assetParty, liabilityParty):

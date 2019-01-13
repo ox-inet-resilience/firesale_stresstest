@@ -43,7 +43,7 @@ Banks:
 Asset market:
 - Contains an orderbook
 - Price impact
-  - ![price impact formula](https://latex.codecogs.com/svg.latex?p'&space;=&space;p&space;\exp{\left[-\beta&space;\frac{\mathrm{sold}}{(\mathrm{market\%2Ccap})}\right]})
+  - ![price impact formula](https://latex.codecogs.com/svg.latex?p'&space;=&space;p&space;\exp{\left[-\beta&space;\frac{\mathrm{sold}}{\mathrm{marketcap}}\right]})
   - β is chosen such that when 10% of the market cap is sold, the price drops by 10%.
 
 ### Behaviours
