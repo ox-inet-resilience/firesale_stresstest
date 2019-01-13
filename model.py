@@ -192,13 +192,21 @@ make_plots(eocs, solds, 100 * initial_shocks, 'Initial shock (%)')
 
 # + {"slideshow": {"slide_type": "-"}}
 # Threshold model (same as previous simulation)
-pylab.figure()
-eocs, solds = run_sim_set(initial_shocks, set_shock)
-pylab.plot(100 * initial_shocks, eocs, label='Threshold model')
+eocs1, solds1 = run_sim_set(initial_shocks, set_shock)
 # Leverage targeting
 Parameters.BANK_LEVERAGE_BUFFER = 1
-eocs, solds = run_sim_set(initial_shocks, set_shock)
-pylab.plot(100 * initial_shocks, eocs, label='Leverage targeting')
+eocs2, solds2 = run_sim_set(initial_shocks, set_shock)
+
+pylab.figure()
+pylab.plot(100 * initial_shocks, eocs1, label='Threshold model')
+pylab.plot(100 * initial_shocks, eocs2, label='Leverage targeting')
 pylab.xlabel('Initial shock (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
+pylab.legend()
+
+pylab.figure()
+pylab.plot(100 * initial_shocks, solds1, label='Threshold model')
+pylab.plot(100 * initial_shocks, solds2, label='Leverage targeting')
+pylab.xlabel('Initial shock (%)')
+pylab.ylabel('Total firesale (euro bln)')
 pylab.legend()
