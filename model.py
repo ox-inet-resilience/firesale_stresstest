@@ -107,7 +107,8 @@ class Model:
         self.apply_initial_shock(
             Parameters.ASSET_TO_SHOCK,
             Parameters.INITIAL_SHOCK)
-        output = [0]
+        defaults = [0]
+        total_sold = []
         while self.get_time() < Parameters.SIMULATION_TIMESTEPS:
             self.simulation.advance_time()
             self.simulation.bank_defaults_this_round = 0
@@ -117,23 +118,42 @@ class Model:
             self.assetMarket.clear_the_market()
             for agent in self.allAgents:
                 agent.act()
-            # output.append(self.simulation.bank_defaults_this_round)
-            output.append(sum(self.assetMarket.totalAmountsSold.values()))
-        return output
+            defaults.append(self.simulation.bank_defaults_this_round)
+            total_sold.append(sum(self.assetMarket.totalAmountsSold.values()))
+        return defaults, total_sold
 
 
 # + {"slideshow": {"slide_type": "slide"}}
 eu = Model()
 
+# Helper function
 def run_sim_set(params, apply_param):
     eocs = []
+    total_solds = []
     for param in params:
         apply_param(param)
         eu.initialize()
-        defaults = eu.run_schedule()
+        defaults, total_sold = eu.run_schedule()
         eoc = get_extent_of_systemic_event(defaults)
         eocs.append(eoc)
-    return eocs
+        # Only use the final element of total_sold (i.e. at the
+        # end of the simulation).
+        total_solds.append(total_sold[-1])
+    return eocs, total_solds
+
+
+# Helper function
+def make_plots(eocs, solds, xarray, xlabel):
+    pylab.figure()
+    pylab.plot(xarray, eocs)
+    pylab.xlabel(xlabel)
+    pylab.ylabel('Systemic risk $\\mathbb{E}$')
+
+    pylab.figure()
+    pylab.plot(xarray, solds)
+    pylab.xlabel(xlabel)
+    pylab.ylabel('Total firesale (euro bln)')
+
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
 # # Simulations
@@ -142,49 +162,42 @@ def run_sim_set(params, apply_param):
 # 3. Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# ## Effect of price impact on systemic risk
+# ## 1. Effect of price impact on systemic risk
 
 # + {"slideshow": {"slide_type": "-"}}
-pylab.figure()
 price_impacts = np.linspace(0, 0.1, 21)
 
 def set_pi(pi):
     Parameters.PRICE_IMPACTS = defaultdict(lambda: pi)
 
-eocs = run_sim_set(price_impacts, set_pi)
-
-pylab.plot(100 * price_impacts, eocs)
-pylab.xlabel('Price impact (%)')
-pylab.ylabel('Systemic risk $\\mathbb{E}$')
+eocs, solds = run_sim_set(price_impacts, set_pi)
+make_plots(eocs, solds, 100 * price_impacts, 'Price impact (%)')
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# ## Effect of initial shock on systemic risk
+# ## 2. Effect of initial shock on systemic risk
 
 # + {"slideshow": {"slide_type": "-"}}
-pylab.figure()
 Parameters.PRICE_IMPACTS = defaultdict(lambda: 0.1)
 initial_shocks = np.linspace(0, 0.3, 21)
 
 def set_shock(shock):
     Parameters.INITIAL_SHOCK = shock
 
-eocs = run_sim_set(initial_shocks, set_shock)
+eocs, solds = run_sim_set(initial_shocks, set_shock)
+make_plots(eocs, solds, 100 * initial_shocks, 'Initial shock (%)')
 
-pylab.plot(100 * initial_shocks, eocs)
-pylab.xlabel('Initial shock (%)')
-pylab.ylabel('Systemic risk $\\mathbb{E}$')
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# ## Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
+# ## 3. Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
 
 # + {"slideshow": {"slide_type": "-"}}
 # Threshold model (same as previous simulation)
 pylab.figure()
-eocs = run_sim_set(initial_shocks, set_shock)
+eocs, solds = run_sim_set(initial_shocks, set_shock)
 pylab.plot(100 * initial_shocks, eocs, label='Threshold model')
 # Leverage targeting
 Parameters.BANK_LEVERAGE_BUFFER = 1
-eocs = run_sim_set(initial_shocks, set_shock)
+eocs, solds = run_sim_set(initial_shocks, set_shock)
 pylab.plot(100 * initial_shocks, eocs, label='Leverage targeting')
 pylab.xlabel('Initial shock (%)')
 pylab.ylabel('Systemic risk $\\mathbb{E}$')
