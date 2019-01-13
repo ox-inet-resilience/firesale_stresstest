@@ -7,23 +7,6 @@ from contracts import Tradable, Other, Loan, AssetType
 from actions import PayLoan, SellAsset, eps
 
 
-class Order:
-    def __init__(self, asset, quantity):
-        self.asset = asset
-        self.quantity = quantity
-
-    def settle(self):
-        # clear sale
-        quantity_sold = min(self.asset.quantity, self.quantity)
-        old_price = self.asset.assetMarket.oldPrices[self.asset.assetType]
-        self.asset.quantity -= quantity_sold
-        self.asset.putForSale_ -= quantity_sold
-        # Sell the asset at the mid-point price
-        value_sold = quantity_sold * (self.asset.price + old_price) / 2
-        if value_sold >= eps:
-            self.asset.assetParty.add_cash(value_sold)
-
-
 class DefaultException(Exception):
     # In general, there are LIQUIDITY, SOLVENCY, FAILED_MARGIN_CALL
     # In this model, we are restricting it to SOLVENCY only.
@@ -36,6 +19,7 @@ class BankLeverageConstraint:
         self.me = me
 
     def get_leverage(self):
+        # \lambda = E / A
         ldg = self.me.get_ledger()
         return ldg.get_equity_value() / ldg.get_asset_value()
 
@@ -44,6 +28,7 @@ class BankLeverageConstraint:
 
     def get_amount_to_delever(self):
         lev = self.get_leverage()
+        # Banks act when \lambda < \lambda^{buffer}
         is_below_buffer = lev < self.me.model.parameters.BANK_LEVERAGE_BUFFER
         if not is_below_buffer:
             return 0.0
@@ -56,33 +41,50 @@ class BankLeverageConstraint:
 class Bank(Agent):
     def __init__(self, name, simulation):
         super().__init__(name, simulation)
+        # `availableActions` is a dictionary (aka hash map in other
+        # languages) that has the action types (sell asset, pay loan)
+        # as its keys and list of actions as its values.
+        # It is reconstructed from scratch at every step.
+        # E.g. {SellAsset: [sellasset1, sellasset2],
+        #       PayLoan: [payloan1, payloan2, payloan3]}
         self.availableActions = {}
         self.do_trigger_default = False
         self.leverageConstraint = BankLeverageConstraint(self)
 
     def init(self, model, assetMarket, assets, liabilities):
+        # init() is for initializing the balance sheet,
+        # while __init__() is the standard Python method for
+        # initializing an object
         cash, corp_bonds, gov_bonds, other_asset = assets
         loan, other_liability = liabilities
         self.model = model
 
         # Asset side
         self.add_cash(cash)
+        # a1. Corporate bonds
+        # Construct the contract
         cb_contract = Tradable(
             self, AssetType.CORPORATE_BONDS,
             assetMarket, corp_bonds)
+        # Add the contract to balance sheet
         self.add(cb_contract)
+        # Register the contract amount to asset market
         assetMarket.total_quantities[AssetType.CORPORATE_BONDS] += corp_bonds
 
+        # a2. Goverment bonds
         gb_contract = Tradable(
             self, AssetType.GOV_BONDS,
             assetMarket, gov_bonds)
         self.add(gb_contract)
         assetMarket.total_quantities[AssetType.GOV_BONDS] += gov_bonds
 
+        # a3. Other asset
         self.add(Other(self, None, other_asset))
 
         # Liability side
+        # l1. Loan
         self.add(Loan(None, self, loan))
+        # l2. Other liability
         self.add(Other(None, self, other_liability))
 
     def trigger_default(self):
@@ -91,9 +93,13 @@ class Bank(Agent):
         self.sell_assets_proportionally()
 
     def is_insolvent(self):
+        # In general, this would include the solvency condition
+        # from risk-weighted capital ratio.
         return self.leverageConstraint.is_insolvent()
 
     def get_available_actions(self):
+        # defaultdict is a convenient dictionary that
+        # automatically creates an entry
         eligibleActions = defaultdict(list)
         ldg = self.get_ledger()
         for contract in (ldg.get_all_assets() + ldg.get_all_liabilities()):
@@ -133,15 +139,19 @@ class Bank(Agent):
         try:
             self.choose_actions()
         except DefaultException:
+            # In general, when a bank defaults, its default treatment
+            # may be order-dependent if executed immediately (e.g. when
+            # it performs bilateral pull funding in the full version of
+            # the model), so it is best to delay it to the step()
+            # stage.
             self.do_trigger_default = True
             self.alive = False
+            # This is for record keeping.
             self.simulation.bank_defaults_this_round += 1
 
-    def pay_liability(self, amount, loan):
-        amount = min(self.get_cash_(), amount)
-        self.get_ledger().pay_liability(amount, loan)
-
     def perform_proportionally(self, actions, amount=None):
+        # This is a common pattern shared by sell assets and
+        # pay loan.
         maximum = sum(a.get_max() for a in actions)
         if amount is None:
             amount = maximum
@@ -158,15 +168,12 @@ class Bank(Agent):
         payLoanActions = self.get_all_actions_of_type(PayLoan)
         return self.perform_proportionally(payLoanActions, amount)
 
-    def set_initial_values(self):
-        self.get_ledger().set_initial_values()
-
-    def get_all_actions_of_type(self, actionType):
-        return self.availableActions[actionType]
-
     def sell_assets_proportionally(self, amount=None):
         sellAssetActions = self.get_all_actions_of_type(SellAsset)
         return self.perform_proportionally(sellAssetActions, amount)
+
+    def get_all_actions_of_type(self, actionType):
+        return self.availableActions[actionType]
 
     def update_asset_price(self, assetType):
         for asset in self.get_ledger().get_assets_of_type(Tradable):
@@ -174,16 +181,41 @@ class Bank(Agent):
                 asset.update_price()
 
 
+# This represents a sale order in an asset market's orderbook.
+class Order:
+    def __init__(self, asset, quantity):
+        self.asset = asset
+        self.quantity = quantity
+
+    def settle(self):
+        # clear sale
+        quantity_sold = min(self.asset.quantity, self.quantity)
+        old_price = self.asset.assetMarket.oldPrices[self.asset.assetType]
+        self.asset.quantity -= quantity_sold
+        self.asset.putForSale_ -= quantity_sold
+        # Sell the asset at the mid-point price
+        value_sold = quantity_sold * (self.asset.price + old_price) / 2
+        if value_sold >= eps:
+            self.asset.assetParty.add_cash(value_sold)
+
+
+# The key functions are clear_the_market() and compute_price_impact()
 class AssetMarket:
     def __init__(self, model):
         self.model = model
+
         self.prices = defaultdict(lambda: 1.0)
-        self.amountsSold = defaultdict(np.longdouble)
-        self.totalAmountsSold = defaultdict(np.longdouble)
-        self.orderbook = []
         self.oldPrices = {}
-        self.total_quantities = defaultdict(np.longdouble)
         self.price_impacts = self.model.parameters.PRICE_IMPACTS
+
+        # This is the amounts sold for each step
+        self.amountsSold = defaultdict(np.longdouble)
+        # This is the cumulative amounts sold for each tradable asset
+        # type.
+        self.totalAmountsSold = defaultdict(np.longdouble)
+        # The total market cap of the system.
+        self.total_quantities = defaultdict(np.longdouble)
+        self.orderbook = []
 
     def put_for_sale(self, asset, amount):
         assert amount > 0, amount
@@ -193,6 +225,7 @@ class AssetMarket:
 
     def clear_the_market(self):
         self.oldPrices = dict(self.prices)
+        # 1. Update price based on price impact
         for atype, v in self.amountsSold.items():
             self.compute_price_impact(atype, v)
 
@@ -203,6 +236,7 @@ class AssetMarket:
             self.totalAmountsSold[atype] += v
         self.amountsSold = defaultdict(np.longdouble)
 
+        # 2. Perform the sale
         for order in self.orderbook:
             order.settle()
         self.orderbook = []
@@ -216,8 +250,13 @@ class AssetMarket:
 
         fraction_sold = amountSold / total
 
-        # exponential price impact
-        new_price = current_price * np.exp(-fraction_sold * price_impact)
+        # See Greenwood 2012 for the choice of the price impact
+        # function.
+        # Exponential price impact. `beta` is chosen such that
+        # when 10% of the market cap is sold, the price drops by
+        # 10%.
+        beta = -10 * np.log(1 - price_impact)
+        new_price = current_price * np.exp(-fraction_sold * beta)
         self.set_price(assetType, new_price)
 
     def get_price(self, assetType):
