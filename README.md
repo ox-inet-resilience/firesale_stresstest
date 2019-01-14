@@ -1,6 +1,6 @@
 # Code for: Foundations of System-Wide Stress Testing
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rht/bank_contagion/master)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ox-inet-resilience/bank_contagion/master)
 
 Note: This is a simplified version that only retains a fire sale contagion
 model, but retains much of the generality of the comprehensive system-wide
