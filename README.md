@@ -14,6 +14,9 @@ There are 3 illustrative experiments:
 2. Effect of initial shock on systemic risk
 3. Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
 
+Data taken from 2018 EU-wide stress test results,
+https://eba.europa.eu/risk-analysis-and-data/eu-wide-stress-testing/2018/results.
+
 # Overview
 
 ### 1. Institutions
