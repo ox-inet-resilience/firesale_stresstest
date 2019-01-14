@@ -108,7 +108,7 @@ class Model:
                 liabilities=(loan, other_liability))
             self.allAgents.append(bank)
 
-    def run_schedule(self):
+    def run_simulation(self):
         self.apply_initial_shock(
             Parameters.ASSET_TO_SHOCK,
             Parameters.INITIAL_SHOCK)
@@ -146,7 +146,7 @@ def run_sim_set(params, apply_param):
     for param in params:
         apply_param(param)
         eu.initialize()
-        defaults, total_sold = eu.run_schedule()
+        defaults, total_sold = eu.run_simulation()
         eoc = get_extent_of_systemic_event(defaults)
         eocs.append(eoc)
         # Only use the final element of total_sold (i.e. at the
