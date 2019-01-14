@@ -129,7 +129,9 @@ class Model:
             for agent in self.allAgents:
                 agent.act()
             defaults.append(self.simulation.bank_defaults_this_round)
-            total_sold.append(sum(self.assetMarket.totalAmountsSold.values()))
+            total_sold.append(
+                sum(self.assetMarket.totalAmountsSold.values()) /
+                sum(self.assetMarket.total_quantities.values()))
         return defaults, total_sold
 
 
@@ -161,9 +163,9 @@ def make_plots(eocs, solds, xarray, xlabel):
     pylab.ylabel('Systemic risk $\\mathbb{E}$')
 
     pylab.figure()
-    pylab.plot(xarray, solds / 1000)
+    pylab.plot(xarray, 100 * solds)
     pylab.xlabel(xlabel)
-    pylab.ylabel('Total firesale (euro bln)')
+    pylab.ylabel('Proportion of tradable assets delevered (%)')
 
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
@@ -219,8 +221,8 @@ pylab.ylabel('Systemic risk $\\mathbb{E}$')
 pylab.legend()
 
 pylab.figure()
-pylab.plot(100 * initial_shocks, solds1 / 1000, label='Threshold model')
-pylab.plot(100 * initial_shocks, solds2 / 1000, label='Leverage targeting')
+pylab.plot(100 * initial_shocks, 100 * solds1, label='Threshold model')
+pylab.plot(100 * initial_shocks, 100 * solds2, label='Leverage targeting')
 pylab.xlabel('Initial shock (%)')
-pylab.ylabel('Total firesale (euro bln)')
+pylab.ylabel('Proportion of tradable assets delevered (%)')
 pylab.legend()
