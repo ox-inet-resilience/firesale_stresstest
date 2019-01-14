@@ -1,10 +1,3 @@
-class DefaultException(Exception):
-    # In general, there are LIQUIDITY, SOLVENCY, FAILED_MARGIN_CALL
-    # In this model, we are restricting it to SOLVENCY only.
-    def __init__(self, me, typeOfDefault):
-        self.typeOfDefault = typeOfDefault
-
-
 class BankLeverageConstraint:
     def __init__(self, me):
         self.me = me

@@ -3,8 +3,15 @@ from collections import defaultdict
 from economicsl import Agent
 
 from contracts import Tradable, Other, Loan, AssetType
-from constraints import BankLeverageConstraint, DefaultException
+from constraints import BankLeverageConstraint
 from behaviours import do_delever, sell_assets_proportionally
+
+
+class DefaultException(Exception):
+    # In general, there are LIQUIDITY, SOLVENCY, FAILED_MARGIN_CALL
+    # In this model, we are restricting it to SOLVENCY only.
+    def __init__(self, me, typeOfDefault):
+        self.typeOfDefault = typeOfDefault
 
 
 class Bank(Agent):
