@@ -23,6 +23,7 @@ def do_delever(bank):
 def perform_proportionally(bank, actions, amount=None):
     # This is a common pattern shared by sell assets and
     # pay loan.
+    # See Greenwood 2015 and Cont-Schaanning 2017.
     maximum = sum(a.get_max() for a in actions)
     if amount is None:
         amount = maximum

@@ -46,6 +46,7 @@ NBANKS = 48
 
 
 def get_extent_of_systemic_event(out):
+    # See Gai-Kapadia 2010
     eose = sum(out) / NBANKS
     if eose < 0.05:
         return 0

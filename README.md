@@ -42,7 +42,7 @@ Banks:
 
 Asset market:
 - Contains an orderbook
-- Price impact
+- Price impact (Cifuentes 2005)
   - ![price impact formula](https://latex.codecogs.com/svg.latex?p'&space;=&space;p&space;\exp{\left[-\beta&space;\frac{\mathrm{sold}}{\mathrm{marketcap}}\right]})
   - β is chosen such that when 10% of the market cap is sold, the price drops by 10%.
 
@@ -55,5 +55,9 @@ and paying bank liabilities proportionally.
 # References
 1. Cont, Rama, and Eric Schaanning. "Fire sales, indirect contagion and systemic stress testing." (2017).
    https://dx.doi.org/10.2139/ssrn.2541114
-2. Cifuentes, R., Ferrucci, G. and Shin, H. S. (2005), ‘Liquidity risk and contagion’, Journal of the European Economic Association 3(2-3), 556–566.
+2. Cifuentes, R., Ferrucci, G. and Shin, H. S. "Liquidity risk and contagion." Journal of the European Economic Association 3(2-3), 556–566. (2005).
    https://dx.doi.org/10.2139/ssrn.824166
+3. Greenwood, Robin, Augustin Landier, and David Thesmar. "Vulnerable banks." Journal of Financial Economics 115, no. 3: 471-485. (2015).
+   https://doi.org/10.3386/w18537
+4. Gai, Prasanna, and Sujit Kapadia. "Contagion in financial networks." In Proceedings of the Royal Society of London A: Mathematical, Physical and Engineering Sciences, p. rspa20090410. The Royal Society. (2010).
+   https://doi.org/10.1098/rspa.2009.0410
