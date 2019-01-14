@@ -1,5 +1,4 @@
 matplotlib
 numpy
 jupytext
-RISE
-git+https://github.com/rht/py-destilledESL#egg=py-destilledESL
+git+https://github.com/rht/py-distilledESL#egg=py-distilledESL
