@@ -16,13 +16,13 @@ There are 3 illustrative experiments:
 
 # Overview
 
-### Institutions
+### 1. Institutions
 
 Banks:
 - asset: cash, tradable asset, other asset
 - liability: loan, other liability
 
-### Contracts
+### 2. Contracts
 
 - Tradable
   - action: sell asset
@@ -30,7 +30,7 @@ Banks:
   - action: pay loan
 - Other assets and liabilities
 
-### Constraints
+### 3. Constraints
 
 - Leverage constraint
   - λ := E / A
@@ -38,7 +38,7 @@ Banks:
   - Delever to λ^target = 5%
   - Default if λ < λ^min = 3%
 
-### Markets
+### 4. Markets
 
 Asset market:
 - Contains an orderbook
@@ -46,7 +46,7 @@ Asset market:
   - ![price impact formula](https://latex.codecogs.com/svg.latex?p'&space;=&space;p&space;\exp{\left[-\beta&space;\frac{\mathrm{sold}}{\mathrm{marketcap}}\right]})
   - β is chosen such that when 10% of the market cap is sold, the price drops by 10%.
 
-### Behaviours
+### 5. Behaviours
 
 Bank only acts to avoid default, by de-levering to a leverage target if its
 buffer has been breached. It does this by selling tradable asset proportionally
