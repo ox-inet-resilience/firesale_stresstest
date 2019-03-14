@@ -61,6 +61,7 @@ class Parameters:
     INITIAL_SHOCK = 0.2
     SIMULATION_TIMESTEPS = 6
     PRICE_IMPACTS = defaultdict(lambda: 0.01)
+    SIMULTANEOUS_FIRESALE = True
 
 # + {"slideshow": {"slide_type": "subslide"}}
 class Model:
@@ -126,7 +127,8 @@ class Model:
             # does pull funding.
             for agent in self.allAgents:
                 agent.step()
-            self.assetMarket.clear_the_market()
+            if Parameters.SIMULTANEOUS_FIRESALE:
+                self.assetMarket.clear_the_market()
             for agent in self.allAgents:
                 agent.act()
             defaults.append(self.simulation.bank_defaults_this_round)
@@ -162,11 +164,13 @@ def make_plots(eocs, solds, xarray, xlabel):
     pylab.plot(xarray, eocs)
     pylab.xlabel(xlabel)
     pylab.ylabel('Systemic risk $\\mathbb{E}$')
+    #pylab.savefig('eocs.png')
 
     pylab.figure()
     pylab.plot(xarray, 100 * solds)
     pylab.xlabel(xlabel)
     pylab.ylabel('Proportion of tradable assets delevered (%)')
+    #pylab.savefig('tradable.png')
 
 
 # + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}

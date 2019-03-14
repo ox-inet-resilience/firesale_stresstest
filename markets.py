@@ -45,6 +45,8 @@ class AssetMarket:
         self.orderbook.append(Order(asset, amount))
         atype = asset.get_asset_type()
         self.amountsSold[atype] += amount
+        if not self.model.parameters.SIMULTANEOUS_FIRESALE:
+            self.clear_the_market()
 
     def clear_the_market(self):
         self.oldPrices = dict(self.prices)
