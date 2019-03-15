@@ -1,28 +1,3 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: light
-#       format_version: '1.3'
-#       jupytext_version: 0.8.6
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-#   livereveal:
-#     autolaunch: true
-#     scroll: true
-# ---
-
-# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# # Foundations for system-wide stress testing: overlapping portfolio contagion
-
-# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# ## Model initialization
-
-# + {"slideshow": {"slide_type": "subslide"}}
-# %matplotlib notebook
 import random
 from collections import defaultdict
 
@@ -36,15 +11,7 @@ from markets import AssetMarket
 from contracts import AssetType
 
 
-pylab.ion()
-pylab.rcParams['figure.figsize'] = (7.0, 4.8)
-pylab.style.use('ggplot')
-# For reproducibility
-random.seed(1337)
-np.random.seed(1337)
 NBANKS = 48
-
-
 def get_extent_of_systemic_event(out):
     # See Gai-Kapadia 2010
     eose = sum(out) / NBANKS
@@ -67,6 +34,7 @@ class Parameters:
 class Model:
     def __init__(self):
         self.simulation = None
+        self.parameters = Parameters
 
     def get_time(self):
         return self.simulation.get_time()
@@ -84,7 +52,6 @@ class Model:
         self.update_asset_price(assetType)
 
     def initialize(self):
-        self.parameters = Parameters
         self.simulation = Simulation()
         self.allAgents = []
         self.assetMarket = AssetMarket(self)
@@ -137,26 +104,7 @@ class Model:
                 sum(self.assetMarket.total_quantities.values()))
         return defaults, total_sold
 
-
-# + {"slideshow": {"slide_type": "slide"}}
-eu = Model()
-
-# Helper function
-def run_sim_set(params, apply_param):
-    eocs = []
-    total_solds = []
-    for param in params:
-        apply_param(param)
-        eu.initialize()
-        defaults, total_sold = eu.run_simulation()
-        eoc = get_extent_of_systemic_event(defaults)
-        eocs.append(eoc)
-        # Only use the final element of total_sold (i.e. at the
-        # end of the simulation).
-        total_solds.append(total_sold[-1])
-    return eocs, np.array(total_solds)
-
-
+# + {"slideshow": {"slide_type": "subslide"}}
 # Helper function
 def make_plots(eocs, solds, xarray, xlabel):
     pylab.figure()
@@ -164,70 +112,22 @@ def make_plots(eocs, solds, xarray, xlabel):
     pylab.plot(xarray, eocs)
     pylab.xlabel(xlabel)
     pylab.ylabel('Systemic risk $\\mathbb{E}$')
-    #pylab.savefig('eocs.png')
 
     pylab.figure()
     pylab.plot(xarray, 100 * solds)
     pylab.xlabel(xlabel)
     pylab.ylabel('Proportion of tradable assets delevered (%)')
-    #pylab.savefig('tradable.png')
 
-
-# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# # Simulations
-# 1. Effect of price impact on systemic risk
-# 2. Effect of initial shock on systemic risk
-# 3. Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
-
-# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# ## 1. Effect of price impact on systemic risk
-
-# + {"slideshow": {"slide_type": "-"}}
-price_impacts = np.linspace(0, 0.1, 21)
-
-def set_pi(pi):
-    Parameters.PRICE_IMPACTS = defaultdict(lambda: pi)
-
-eocs, solds = run_sim_set(price_impacts, set_pi)
-make_plots(eocs, solds, 100 * price_impacts, 'Price impact (%)')
-
-# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# ## 2. Effect of initial shock on systemic risk
-
-# + {"slideshow": {"slide_type": "-"}}
-Parameters.PRICE_IMPACTS = defaultdict(lambda: 0.01)
-initial_shocks = np.linspace(0, 0.3, 21)
-
-def set_shock(shock):
-    Parameters.INITIAL_SHOCK = shock
-
-eocs, solds = run_sim_set(initial_shocks, set_shock)
-make_plots(eocs, solds, 100 * initial_shocks, 'Initial shock (%)')
-
-
-# + {"slideshow": {"slide_type": "slide"}, "cell_type": "markdown"}
-# ## 3. Difference between leverage targeting and threshold model (Cont-Schaanning 2017)
-
-# + {"slideshow": {"slide_type": "-"}}
-# Threshold model (same as previous simulation)
-eocs1, solds1 = run_sim_set(initial_shocks, set_shock)
-# Leverage targeting
-# This (100% leverage buffer) makes the banks to always delever to
-# reach leverage target.
-Parameters.BANK_LEVERAGE_BUFFER = 1
-eocs2, solds2 = run_sim_set(initial_shocks, set_shock)
-
-pylab.figure()
-pylab.ylim(-0.01, 1.05)
-pylab.plot(100 * initial_shocks, eocs1, label='Threshold model')
-pylab.plot(100 * initial_shocks, eocs2, label='Leverage targeting')
-pylab.xlabel('Initial shock (%)')
-pylab.ylabel('Systemic risk $\\mathbb{E}$')
-pylab.legend()
-
-pylab.figure()
-pylab.plot(100 * initial_shocks, 100 * solds1, label='Threshold model')
-pylab.plot(100 * initial_shocks, 100 * solds2, label='Leverage targeting')
-pylab.xlabel('Initial shock (%)')
-pylab.ylabel('Proportion of tradable assets delevered (%)')
-pylab.legend()
+def run_sim_set(model, params, apply_param):
+    eocs = []
+    total_solds = []
+    for param in params:
+        apply_param(param)
+        model.initialize()
+        defaults, total_sold = model.run_simulation()
+        eoc = get_extent_of_systemic_event(defaults)
+        eocs.append(eoc)
+        # Only use the final element of total_sold (i.e. at the
+        # end of the simulation).
+        total_solds.append(total_sold[-1])
+    return eocs, np.array(total_solds)

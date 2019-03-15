@@ -24,7 +24,7 @@ To run the model as it is:
 1. `pip install -r requirements.txt`
 2. Edit `~/.jupyter/jupyter_notebook_config.py` and add this line `c.NotebookApp.contents_manager_class = 'jupytext.TextFileContentsManager'  # noqa`. This is to make sure that model.py can be read as a jupyter notebook
 3. `jupyter notebook`
-4. Execute all the cells in model.py
+4. Execute all the cells in simulation.py
 
 If you want to display model.py in the form of a slideshow, you must do `pip install RISE && jupyter-nbextension install rise --py --sys-prefix && jupyter-nbextension enable rise --py --sys-prefix`.
 
