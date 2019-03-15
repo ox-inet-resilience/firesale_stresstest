@@ -3,7 +3,10 @@ import random
 import pylab
 import numpy as np
 
-from model import Model, get_extent_of_systemic_event
+from model import Model, get_extent_of_systemic_event, run_sim_set
+
+# This simulation is a benchmark of simultaneous batching of firesale action
+# and random shuffling
 
 NSIM = 2
 
@@ -14,27 +17,19 @@ def seed():
     random.seed(1337)
     np.random.seed(1337)
 
-def run_sim_set(eu, params, apply_param):
+def run_repeated_sim_sets(eu, params, apply_param):
     eocs_set = []
     total_solds_set = []
     for i in range(NSIM):
-        eocs = []
-        total_solds = []
-        for param in params:
-            apply_param(param)
-            eu.initialize()
-            defaults, total_sold = eu.run_simulation()
-            eoc = get_extent_of_systemic_event(defaults)
-            eocs.append(eoc)
-            # Only use the final element of total_sold (i.e. at the
-            # end of the simulation).
-            total_solds.append(total_sold[-1])
+        eocs, total_solds = run_sim_set(eu, params, apply_param)
         eocs_set.append(eocs)
         total_solds_set.append(total_solds)
-    aeocs = np.array(eocs_set).mean(axis=0)
-    std_eocs = np.array(eocs_set).std(axis=0)
-    atotal_solds = np.array(total_solds_set).mean(axis=0)
-    std_total_solds = np.array(total_solds_set).std(axis=0)
+    eocs_set = np.array(eocs_set)
+    total_solds_set = np.array(total_solds_set)
+    aeocs = eocs_set.mean(axis=0)
+    std_eocs = eocs_set.std(axis=0)
+    atotal_solds = total_solds_set.mean(axis=0)
+    std_total_solds = total_solds_set.std(axis=0)
     return aeocs, std_eocs, atotal_solds, std_total_solds
 
 def setup_matplotlib():
@@ -85,12 +80,12 @@ def set_pi(pi):
 print("Running the simulation")
 pylab.figure()
 seed()
-out = run_sim_set(eu, price_impacts, set_pi)
+out = run_repeated_sim_sets(eu, price_impacts, set_pi)
 make_plots(out, 100 * price_impacts, 'Price impact (%)', 'simultaneous')
 
-seed()
+seed()  # reset the seed
 eu.parameters.SIMULTANEOUS_FIRESALE = False
-out = run_sim_set(eu, price_impacts, set_pi)
+out = run_repeated_sim_sets(eu, price_impacts, set_pi)
 make_plots(out, 100 * price_impacts, 'Price impact (%)', 'random shuffle')
 pylab.legend(loc='best')
 pylab.title(f'NSIM = {NSIM}')
