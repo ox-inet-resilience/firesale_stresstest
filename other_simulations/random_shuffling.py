@@ -3,12 +3,12 @@ import random
 import pylab
 import numpy as np
 
-from model import Model, get_extent_of_systemic_event, run_sim_set
+from model import Model, run_sim_set
 
 # This simulation is a benchmark of simultaneous batching of firesale action
 # and random shuffling
 
-NSIM = 2
+NSIM = 100
 
 eu = Model()
 
@@ -90,4 +90,4 @@ make_plots(out, 100 * price_impacts, 'Price impact (%)', 'random shuffle')
 pylab.legend(loc='best')
 pylab.title(f'NSIM = {NSIM}')
 pylab.savefig(f'plots/random_shuffling_benchmark-{NSIM}.png')
-pylab.savefig(f'plots/random_shuffling_benchmark-{NSIM}.pdf')
+pylab.savefig(f'plots/random_shuffling_benchmark-{NSIM}.eps')
