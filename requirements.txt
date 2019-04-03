@@ -1,4 +1,4 @@
 matplotlib
 numpy
 jupytext
-git+https://github.com/ox-inet-resilience/py-distilledESL#egg=py-distilledESL
+git+https://github.com/ox-inet-resilience/py-economicsl#egg=py-economicsl
