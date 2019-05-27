@@ -8,6 +8,8 @@ stress test model.
 
 By: J. Doyne Farmer, Alissa M. Kleinnijenhuis, Paul Nahai-Williamson, and Thom Wetzer.
 
+For questions, contact alissa.kleinnijenhuis＠maths.ox.ac.uk.
+
 The model.py file is a hybrid source code - Jupyter notebook.
 There are 3 illustrative experiments:
 1. Effect of price impact on systemic risk
