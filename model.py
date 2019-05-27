@@ -100,7 +100,7 @@ class Model:
                 agent.act()
             defaults.append(self.simulation.bank_defaults_this_round)
             total_sold.append(
-                sum(self.assetMarket.totalAmountsSold.values()) /
+                sum(self.assetMarket.cumulative_quantities_sold.values()) /
                 sum(self.assetMarket.total_quantities.values()))
         return defaults, total_sold
 

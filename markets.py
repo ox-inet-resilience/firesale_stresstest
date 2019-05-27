@@ -31,49 +31,49 @@ class AssetMarket:
         self.oldPrices = {}
         self.price_impacts = self.model.parameters.PRICE_IMPACTS
 
-        # This is the amounts sold for each step
-        self.amountsSold = defaultdict(np.longdouble)
-        # This is the cumulative amounts sold for each tradable asset
+        # This is the quantities sold for each step
+        self.quantities_sold = defaultdict(np.longdouble)
+        # This is the cumulative quantities sold for each tradable asset
         # type.
-        self.totalAmountsSold = defaultdict(np.longdouble)
+        self.cumulative_quantities_sold = defaultdict(np.longdouble)
         # The total market cap of the system.
         self.total_quantities = defaultdict(np.longdouble)
         self.orderbook = []
 
-    def put_for_sale(self, asset, amount):
-        assert amount > 0, amount
-        self.orderbook.append(Order(asset, amount))
+    def put_for_sale(self, asset, quantity):
+        assert quantity > 0, quantity
+        self.orderbook.append(Order(asset, quantity))
         atype = asset.get_asset_type()
-        self.amountsSold[atype] += amount
+        self.quantities_sold[atype] += quantity
         if not self.model.parameters.SIMULTANEOUS_FIRESALE:
             self.clear_the_market()
 
     def clear_the_market(self):
         self.oldPrices = dict(self.prices)
         # 1. Update price based on price impact
-        for atype, v in self.amountsSold.items():
+        for atype, v in self.quantities_sold.items():
             self.compute_price_impact(atype, v)
 
             newPrice = self.prices[atype]
             priceLost = self.oldPrices[atype] - newPrice
             if priceLost > 0:
                 self.model.update_asset_price(atype)
-            self.totalAmountsSold[atype] += v
-        self.amountsSold = defaultdict(np.longdouble)
+            self.cumulative_quantities_sold[atype] += v
+        self.quantities_sold = defaultdict(np.longdouble)
 
         # 2. Perform the sale
         for order in self.orderbook:
             order.settle()
         self.orderbook = []
 
-    def compute_price_impact(self, assetType, amountSold):
+    def compute_price_impact(self, assetType, qty_sold):
         current_price = self.prices[assetType]
         price_impact = self.price_impacts[assetType]
         total = self.total_quantities[assetType]
         if total <= 0:
             return
 
-        fraction_sold = amountSold / total
+        fraction_sold = qty_sold / total
 
         # See Cifuentes 2005 for the choice of the price impact
         # function.
