@@ -48,12 +48,12 @@ class PayLoan(Action):
     def perform(self):
         # for safety measure: once again truncate the amount to not exceed
         # the valuation of the loan
-        amount = min(self.get_amount(), self.loan.get_valuation())
+        amount = min(self.get_amount(), self.loan.get_notional())
         self.loan.liabilityParty.get_ledger().subtract_cash(amount)
         self.loan.reduce_principal(amount)
 
     def get_max(self):
-        return self.loan.get_valuation()
+        return self.loan.get_notional()
 
 
 # 1. This is the generic Contract shared by all the 3 contracts definition
@@ -126,7 +126,7 @@ class Tradable(Contract):
     def get_asset_type(self):
         return self.assetType
 
-    def get_valuation(self):
+    def get_valuation(self, side):
         return self.quantity * self.price
 
 
@@ -138,7 +138,7 @@ class Other(Contract):
         super().__init__(assetParty, liabilityParty)
         self.principal = amount
 
-    def get_valuation(self):
+    def get_valuation(self, side):
         return self.principal
 
 
@@ -158,7 +158,10 @@ class Loan(Contract):
         return PayLoan(self.liabilityParty, self)
 
     def is_eligible(self, me):
-        return self.get_valuation() > 0
+        return self.get_notional() > 0
 
-    def get_valuation(self):
+    def get_notional(self):
         return self.principal
+
+    def get_valuation(self, side):
+        return self.get_notional()
