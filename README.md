@@ -8,7 +8,7 @@ stress test model.
 
 By: J. Doyne Farmer, Alissa M. Kleinnijenhuis, Paul Nahai-Williamson, and Thom Wetzer.
 
-For questions, contact alissa.kleinnijenhuis＠maths.ox.ac.uk.
+For questions, contact alissa.kleinnijenhuis＠maths.ox.ac.uk (note: the "@" symbol is from unicode U+FF20 and so needs to be replaced with @).
 
 The model.py file is a hybrid source code - Jupyter notebook.
 There are 3 illustrative experiments:
