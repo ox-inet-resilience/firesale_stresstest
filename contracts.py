@@ -47,7 +47,7 @@ class PayLoan(Action):
 
     def perform(self):
         # for safety measure: once again truncate the amount to not exceed
-        # the valuation of the loan
+        # the notional of the loan
         amount = min(self.get_amount(), self.loan.get_notional())
         self.loan.liabilityParty.get_ledger().subtract_cash(amount)
         self.loan.reduce_principal(amount)
