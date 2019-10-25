@@ -13,6 +13,7 @@
 # ---
 
 from economicsl import Action
+from economicsl.contract import Contract as ESLContract
 # floating point tolerance, ~0.001 EUR
 eps = 1e-9
 
@@ -64,7 +65,7 @@ class PayLoan(Action):
 # 3. For modularity purpose, actions are separated from the contracts
 #    definition. So that they can be swapped with other types of action
 #    whenever necessary.
-class Contract:
+class Contract(ESLContract):
     # ctype is defined to group very similar contracts together,
     # e.g. Loan and BailinableLoan are different classes but both have the same
     # ctype 'Loan'.
