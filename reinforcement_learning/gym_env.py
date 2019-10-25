@@ -11,7 +11,7 @@ from markets import AssetMarket
 from model import Model
 
 class RLBank(Bank):
-    def choose_actions(self):
+    def choose_actions(self, observation):
         # 0) If I'm insolvent, default.
         if self.is_insolvent():
             raise DefaultException(self, 'SOLVENCY')
@@ -26,6 +26,22 @@ class RLBank(Bank):
         if balance < deLever:
             amount_to_raise = (deLever - balance) * random.random()
             sell_assets_proportionally(self, amount_to_raise)
+
+    def act(self, observation):
+        if not self.alive:
+            return
+        self.availableActions = self.get_available_actions()
+        try:
+            self.choose_actions(observation)
+        except DefaultException:
+            # In general, when a bank defaults, its default treatment
+            # may be order-dependent if executed immediately (e.g. when
+            # it performs bilateral pull funding in the full model), so
+            # it is best to delay it to the step() stage.
+            self.do_trigger_default = True
+            self.alive = False
+            # This is for record keeping.
+            self.simulation.bank_defaults_this_round += 1
 
 class RLModel(Model):
     def initialize(self):
@@ -61,8 +77,9 @@ class RLModel(Model):
             agent.step()
         if self.parameters.SIMULTANEOUS_FIRESALE:
             self.assetMarket.clear_the_market()
+        observation = self.assetMarket.prices
         for agent in self.allAgents:
-            agent.act()
+            agent.act(observation)
         return sum(agent.get_ledger().get_equity_valuation() for agent in self.allAgents)
 
 if __name__ == '__main__':
