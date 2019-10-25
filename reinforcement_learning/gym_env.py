@@ -17,14 +17,15 @@ class RLBank(Bank):
             raise DefaultException(self, 'SOLVENCY')
         balance = self.get_cash_()
         # 1. Pay off liabilities to delever
-        deLever = min(balance, self.leverageConstraint.get_amount_to_delever())
-        if deLever > 0:
-            deLever = pay_off_liabilities(self, deLever)
+        amountToDeLever = min(balance, self.leverageConstraint.get_amount_to_delever())
+        if amountToDeLever > 0:
+            deLever = pay_off_liabilities(self, amountToDeLever)
             balance -= deLever
+            amountToDeLever -= deLever
 
         # 2. Raise liquidity to delever later
-        if balance < deLever:
-            amount_to_raise = (deLever - balance) * random.random()
+        if balance < amountToDeLever:
+            amount_to_raise = (amountToDeLever - balance) * random.random()
             sell_assets_proportionally(self, amount_to_raise)
 
     def act(self, observation):

@@ -9,14 +9,15 @@ def do_nothing(bank):
 def do_delever(bank):
     balance = bank.get_cash_()
     # 1. Pay off liabilities to delever
-    deLever = min(balance, bank.leverageConstraint.get_amount_to_delever())
-    if deLever > 0:
-        deLever = pay_off_liabilities(bank, deLever)
+    amountToDeLever = min(balance, bank.leverageConstraint.get_amount_to_delever())
+    if amountToDeLever > 0:
+        deLever = pay_off_liabilities(bank, amountToDeLever)
         balance -= deLever
+        amountToDeLever -= deLever
 
     # 2. Raise liquidity to delever later
-    if balance < deLever:
-        amount_to_raise = deLever - balance
+    if balance < amountToDeLever:
+        amount_to_raise = amountToDeLever - balance
         sell_assets_proportionally(bank, amount_to_raise)
 
 # List of behavioural units
