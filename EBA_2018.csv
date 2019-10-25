@@ -1,4 +1,4 @@
-bank_id CET1E leverage debt_sec govbonds
+bank_id,CET1E,leverage,debt_sec,govbonds
 AT01 14712 6.55 34241 13+27682
 AT02 9266 6.12 19761 1172+14788
 BE03 8141 5.59 14275 27+8580
