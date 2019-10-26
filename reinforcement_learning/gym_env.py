@@ -27,8 +27,9 @@ class RLBank(Bank):
             amountToDeLever -= deLever
 
         # 2. Raise liquidity to delever later
+        scale = random.choice([0, 0.2, 0.4, 0.6, 0.8, 1])
         if balance < amountToDeLever:
-            amount_to_raise = (amountToDeLever - balance) * random.random()
+            amount_to_raise = (amountToDeLever - balance) * scale
             sell_assets_proportionally(self, amount_to_raise)
 
     def act(self, observation):
