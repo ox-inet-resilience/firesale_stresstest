@@ -11,6 +11,9 @@ from markets import AssetMarket
 from model import Model
 
 class RLBank(Bank):
+    def __init__(self, name, simulation):
+        super().__init__(name, simulation)
+
     def choose_actions(self, observation):
         # 0) If I'm insolvent, default.
         if self.is_insolvent():
