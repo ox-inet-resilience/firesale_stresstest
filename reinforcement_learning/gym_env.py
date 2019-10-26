@@ -20,7 +20,7 @@ class RLBank(Bank):
             raise DefaultException(self, 'SOLVENCY')
         balance = self.get_cash_()
         # 1. Pay off liabilities to delever
-        amountToDeLever = min(balance, self.leverageConstraint.get_amount_to_delever())
+        amountToDeLever = self.leverageConstraint.get_amount_to_delever()
         if amountToDeLever > 0:
             deLever = pay_off_liabilities(self, amountToDeLever)
             balance -= deLever

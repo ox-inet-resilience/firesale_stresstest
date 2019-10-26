@@ -9,7 +9,7 @@ def do_nothing(bank):
 def do_delever(bank):
     balance = bank.get_cash_()
     # 1. Pay off liabilities to delever
-    amountToDeLever = min(balance, bank.leverageConstraint.get_amount_to_delever())
+    amountToDeLever = bank.leverageConstraint.get_amount_to_delever()
     if amountToDeLever > 0:
         deLever = pay_off_liabilities(bank, amountToDeLever)
         balance -= deLever
