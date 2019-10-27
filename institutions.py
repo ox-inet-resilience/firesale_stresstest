@@ -71,6 +71,7 @@ class Bank(Agent):
     def trigger_default(self):
         self.do_trigger_default = False
 
+        # Sell everything
         sell_assets_proportionally(self)
 
     def is_insolvent(self):
