@@ -27,7 +27,7 @@ class Parameters:
     ASSET_TO_SHOCK = AssetType.GOV_BONDS
     INITIAL_SHOCK = 0.2
     SIMULATION_TIMESTEPS = 6
-    PRICE_IMPACTS = defaultdict(lambda: 0.01)
+    PRICE_IMPACTS = defaultdict(lambda: 0.05)
     SIMULTANEOUS_FIRESALE = True
 
 # + {"slideshow": {"slide_type": "subslide"}}

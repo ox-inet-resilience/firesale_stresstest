@@ -78,9 +78,9 @@ class AssetMarket:
         # See Cifuentes 2005 for the choice of the price impact
         # function.
         # Exponential price impact. `beta` is chosen such that
-        # when 10% of the market cap is sold, the price drops by
-        # 10%.
-        beta = -10 * np.log(1 - price_impact)
+        # when 5% of the market cap is sold, the price drops by
+        # 5%.
+        beta = -1 / 0.05 * np.log(1 - price_impact)
         new_price = current_price * np.exp(-fraction_sold * beta)
         self.set_price(assetType, new_price)
 

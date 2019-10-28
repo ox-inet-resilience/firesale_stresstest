@@ -32,14 +32,20 @@ If you want to display model.py in the form of a slideshow, you must do `pip ins
 
 # Overview
 
+The framework consist of 5 building blocks: institutions, contracts, constraints, markets, and behaviours.
+The simple asset-sale model fills in the 5 building blocks as follows:
+
 ### 1. Institutions
 
-Banks:
-- asset: cash, tradable asset, other asset
-- liability: loan, other liability
+1. Banks  
+   Each bank has a balance sheet consisting of the following components:
+   - asset: cash, tradable asset, other asset
+   - liability: loan, other liability
 
 ### 2. Contracts
 
+Tradable assets T interconnect the banks.
+The cash C, other assets O and the generic liability L do not.
 - Tradable
   - action: sell asset
 - Loan
@@ -48,19 +54,26 @@ Banks:
 
 ### 3. Constraints
 
+Each bank faces a leverage constraint.
+
 - Leverage constraint
   - λ := E / A
   - Delever if λ < λ^buffer = 4%
   - Delever to λ^target = 5%
-  - Default if λ < λ^min = 3%
+  - Default if λ < λ^min = 3%  
+    When this happens, all tradable assets of a defaulted bank are liquidated.
 
 ### 4. Markets
+
+The price of each tradable asset p_m is determined using a price impact function.
+The price is a function of the net cumulative number of asset sales.
+Each asset has its own price impact parameter, which determines the market liquidity of the asset.
 
 Asset market:
 - Contains an orderbook
 - Price impact (Cifuentes 2005)
   - ![price impact formula](https://latex.codecogs.com/svg.latex?p'&space;=&space;p&space;\exp{\left[-\beta&space;\frac{\mathrm{sold}}{\mathrm{marketcap}}\right]})
-  - β is chosen such that when 10% of the market cap is sold, the price drops by 10%.
+  - By default, β is chosen such that when 5% of the market cap is sold, the price drops by 5%.
 
 ### 5. Behaviours
 
