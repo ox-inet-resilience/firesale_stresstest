@@ -56,7 +56,7 @@ class RLModelEnv(Model):
     def reset(self):
         self.simulation = Simulation()
         self.allAgents = []
-        self.agents_dict = {}
+        self.allAgents_dict = {}
         self.assetMarket = AssetMarket(self)
         obs = {}
         with open('EBA_2018.csv', 'r') as data:
@@ -84,7 +84,7 @@ class RLModelEnv(Model):
             self.allAgents.append(bank)
             # RL-specific
             obs[bank_name] = (dict(self.assetMarket.prices), asset, liability, lev_ratio)
-            self.agents_dict[bank_name] = bank
+            self.allAgents_dict[bank_name] = bank
         self.apply_initial_shock(
             self.parameters.ASSET_TO_SHOCK,
             self.parameters.INITIAL_SHOCK)
@@ -112,8 +112,10 @@ class RLModelEnv(Model):
         if self.parameters.SIMULTANEOUS_FIRESALE:
             self.assetMarket.clear_the_market()
         new_prices = dict(self.assetMarket.prices)
-        for name, agent in self.agents_dict.items():
+        for name, agent in self.allAgents_dict.items():
             was_alive = agent.alive
+            if not was_alive:
+                continue
             action = action_dict[name]
             agent.act(action)
             # for observation
@@ -149,7 +151,7 @@ if __name__ == '__main__':
     while play < max_play:
         actions = {}
         play += 1
-        for bank_name, bank in env.agents_dict.items():
+        for bank_name, bank in env.allAgents_dict.items():
             actions[bank_name] = stupid_action(bank)  # this is where you use your RLAgents!
         obs, _, _, infos = env.step(actions)
         num_defaults.append(infos['NUM_DEFAULTS'])
