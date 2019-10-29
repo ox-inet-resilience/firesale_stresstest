@@ -144,9 +144,7 @@ if __name__ == '__main__':
 
     def stupid_action(bank):
         action = {}
-        CB_qty = bank.get_ledger().get_asset_valuation_of(Tradable, AssetType.CORPORATE_BONDS)
-        GB_qty = bank.get_ledger().get_asset_valuation_of(Tradable, AssetType.GOV_BONDS)
-        action[AssetType.CORPORATE_BONDS], action[AssetType.GOV_BONDS] = CB_qty * 0.2 * abs(np.random.normal() - 0.5), GB_qty * 0.2 * np.random.normal() * abs(np.random.normal() - 0.5)
+        action[AssetType.CORPORATE_BONDS], action[AssetType.GOV_BONDS] = 0.2 * abs(np.random.normal() - 0.5), 0.2 * np.random.normal() * abs(np.random.normal() - 0.5)
         return action
 
     play, max_play = 0, 10
