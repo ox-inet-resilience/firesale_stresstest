@@ -133,7 +133,7 @@ class RLModelEnv(Model):
                 dones[name] = True
         infos['ASSET_PRICES'], infos['NUM_DEFAULTS'] = new_prices, self.simulation.bank_defaults_this_round
         now = self.get_time()
-        infos['AVERAGE_LIFESPAN'] = sum(now if a.alive else a.time_of_death for a in self.allAgents)
+        infos['AVERAGE_LIFESPAN'] = sum(now if a.alive else a.time_of_death for a in self.allAgents) / len(self.allAgents)
         return obs, rewards, dones, infos
 
 if __name__ == '__main__':
