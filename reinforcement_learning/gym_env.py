@@ -19,13 +19,8 @@ class RLBank(Bank):
         # 0) If I'm insolvent, default.
         if self.is_insolvent():
             raise DefaultException(self, 'SOLVENCY')
-        balance = self.get_cash_()
         # 1. Pay off liabilities to delever
-        amountToDeLever = self.leverageConstraint.get_amount_to_delever()
-        if amountToDeLever > 0:
-            deLever = pay_off_liabilities(self, amountToDeLever)
-            balance -= deLever
-            amountToDeLever -= deLever
+        # Moved to Order.settle()
 
         # 2. Raise liquidity to delever later
         sellAssetActions = self.get_all_actions_of_type(SellAsset)
