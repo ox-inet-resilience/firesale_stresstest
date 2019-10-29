@@ -3,7 +3,9 @@ import numpy as np
 
 from reinforcement_learning.gym_env import RLModelEnv
 from reinforcement_learning.MARL.NaiveA2C.ddpg_agent import Agent
+from reinforcement_learning.MARL.NaiveA2C.util import setup_matplotlib, plot_custom_errorbar_plot
 from contracts import Tradable
+
 
 def MA_obs_to_bank_obs(obs, bank):
     bank_obs = obs[bank.get_name()]
@@ -21,7 +23,8 @@ for idx, name in enumerate(bank_names):
     agent = Agent(state_size=3, action_size=2, random_seed=idx, name=name)
     RLagent_dict[name] = agent
 
-for episode in range(100000):
+average_lifespans = []
+for episode in range(1000):
 
     if episode == 0 or episode % 100 == 0:
         print(f'=========================================Episode {episode}===============================================')
@@ -61,6 +64,16 @@ for episode in range(100000):
         current_obs = new_obs
         num_default.append(infos['NUM_DEFAULTS'])
         play += 1
+        if play == max_play:
+            print(infos['AVERAGE_LIFESPAN'])
+            average_lifespans.append(infos['AVERAGE_LIFESPAN'])
+
+setup_matplotlib()
+average_lifespans = np.array(average_lifespans).reshape((10, 100))
+means_avg_lifespans = np.mean(average_lifespans, axis=1)
+stds_avg_lifespans = np.std(average_lifespans, axis=1)
+plot_custom_errorbar_plot(range(10), means_avg_lifespans, stds_avg_lifespans)
+plt.savefig('lifespan.png')
 
     # plt.plot(num_default)
     # plt.ylabel('Number of defaults')
