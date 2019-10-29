@@ -13,6 +13,7 @@ from model import Model
 class RLBank(Bank):
     def __init__(self, name, simulation):
         super().__init__(name, simulation)
+        self.time_of_death = None
 
     def choose_actions(self, action):
         # 0) If I'm insolvent, default.
@@ -49,6 +50,7 @@ class RLBank(Bank):
             # it is best to delay it to the step() stage.
             self.do_trigger_default = True
             self.alive = False
+            self.time_of_death = self.get_time()
             # This is for record keeping.
             self.simulation.bank_defaults_this_round += 1
 
@@ -112,6 +114,7 @@ class RLModelEnv(Model):
         if self.parameters.SIMULTANEOUS_FIRESALE:
             self.assetMarket.clear_the_market()
         new_prices = dict(self.assetMarket.prices)
+        now = self.get_time()
         for name, agent in self.allAgents_dict.items():
             if not agent.alive:
                 continue
@@ -130,6 +133,7 @@ class RLModelEnv(Model):
                 rewards[name] = -10
                 dones[name] = True
         infos['ASSET_PRICES'], infos['NUM_DEFAULTS'] = new_prices, self.simulation.bank_defaults_this_round
+        infos['AVERAGE_LIFESPAN'] = sum(now if a.alive else a.time_of_death for a in self.allAgents)
         return obs, rewards, dones, infos
 
 if __name__ == '__main__':
