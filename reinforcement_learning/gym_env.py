@@ -114,7 +114,6 @@ class RLModelEnv(Model):
         if self.parameters.SIMULTANEOUS_FIRESALE:
             self.assetMarket.clear_the_market()
         new_prices = dict(self.assetMarket.prices)
-        now = self.get_time()
         for name, agent in self.allAgents_dict.items():
             if not agent.alive:
                 continue
@@ -133,6 +132,7 @@ class RLModelEnv(Model):
                 rewards[name] = -10
                 dones[name] = True
         infos['ASSET_PRICES'], infos['NUM_DEFAULTS'] = new_prices, self.simulation.bank_defaults_this_round
+        now = self.get_time()
         infos['AVERAGE_LIFESPAN'] = sum(now if a.alive else a.time_of_death for a in self.allAgents)
         return obs, rewards, dones, infos
 
