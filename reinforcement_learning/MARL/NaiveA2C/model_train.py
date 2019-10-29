@@ -43,7 +43,7 @@ for episode in range(100000):
             my_obs = MA_obs_to_bank_obs(current_obs, bank)
             current_obs[bank_name] = my_obs
             # choose action
-            action = RLagent_dict[bank_name].act(current_obs[bank_name], add_noise=False)
+            action = RLagent_dict[bank_name].act(current_obs[bank_name].astype(float), add_noise=False)
             actions[bank_name] = action  # this is where you use your RLAgents!
         # convert actions
         actions_dict = {}
