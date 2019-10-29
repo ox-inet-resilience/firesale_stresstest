@@ -113,8 +113,7 @@ class RLModelEnv(Model):
             self.assetMarket.clear_the_market()
         new_prices = dict(self.assetMarket.prices)
         for name, agent in self.allAgents_dict.items():
-            was_alive = agent.alive
-            if not was_alive:
+            if not agent.alive:
                 continue
             action = action_dict[name]
             agent.act(action)
@@ -129,7 +128,7 @@ class RLModelEnv(Model):
                 dones[name] = False
             else:
                 rewards[name] = -10
-                dones[name] = was_alive
+                dones[name] = True
         infos['ASSET_PRICES'], infos['NUM_DEFAULTS'] = new_prices, self.simulation.bank_defaults_this_round
         return obs, rewards, dones, infos
 
