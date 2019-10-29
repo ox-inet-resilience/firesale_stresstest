@@ -31,7 +31,7 @@ class RLBank(Bank):
         sellAssetActions = self.get_all_actions_of_type(SellAsset)
         for saa in sellAssetActions:
             if saa.asset.assetType in action:
-                rl_action_amount = action[saa.asset.assetType]
+                rl_action_amount = action[saa.asset.assetType] * saa.asset.get_valuation('A')
                 amount = min(rl_action_amount, saa.get_max())
                 saa.set_amount(amount)
                 if amount > 0:
