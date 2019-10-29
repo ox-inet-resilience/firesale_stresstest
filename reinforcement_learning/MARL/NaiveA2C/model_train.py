@@ -65,7 +65,6 @@ for episode in range(1000):
         num_default.append(infos['NUM_DEFAULTS'])
         play += 1
         if play == max_play:
-            print(infos['AVERAGE_LIFESPAN'])
             average_lifespans.append(infos['AVERAGE_LIFESPAN'])
 
 setup_matplotlib()
