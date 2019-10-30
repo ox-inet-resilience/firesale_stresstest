@@ -3,6 +3,7 @@ from collections import defaultdict
 import numpy as np
 
 from contracts import eps
+from behaviours import pay_off_liabilities
 
 # This represents a sale order in an asset market's orderbook.
 class Order:
@@ -19,7 +20,8 @@ class Order:
         # Sell the asset at the mid-point price
         value_sold = quantity_sold * (self.asset.price + old_price) / 2
         if value_sold >= eps:
-            self.asset.assetParty.add_cash(value_sold)
+            #self.asset.assetParty.add_cash(value_sold)
+            pay_off_liabilities(self.asset.assetParty, value_sold)
 
 
 # The key functions are clear_the_market() and compute_price_impact()

@@ -19,13 +19,8 @@ class RLBank(Bank):
         # 0) If I'm insolvent, default.
         if self.is_insolvent():
             raise DefaultException(self, 'SOLVENCY')
-        balance = self.get_cash_()
         # 1. Pay off liabilities to delever
-        amountToDeLever = self.leverageConstraint.get_amount_to_delever()
-        if amountToDeLever > 0:
-            deLever = pay_off_liabilities(self, amountToDeLever)
-            balance -= deLever
-            amountToDeLever -= deLever
+        # Moved to Order.settle()
 
         # 2. Raise liquidity to delever later
         sellAssetActions = self.get_all_actions_of_type(SellAsset)
@@ -61,7 +56,7 @@ class RLModelEnv(Model):
         self.allAgents_dict = {}
         self.assetMarket = AssetMarket(self)
         obs = {}
-        with open('EBA_2018.csv', 'r') as data:
+        with open('/Users/mmw/Documents/GitHub/firesale_stresstest/banks.csv', 'r') as data:
             self.bank_balancesheets = data.read().strip().split('\n')[1:]
         for bs in self.bank_balancesheets:
             # This steps consist of loading balance sheet from data file
@@ -146,7 +141,7 @@ if __name__ == '__main__':
         action = {}
         CB_qty = bank.get_ledger().get_asset_valuation_of(Tradable, AssetType.CORPORATE_BONDS)
         GB_qty = bank.get_ledger().get_asset_valuation_of(Tradable, AssetType.GOV_BONDS)
-        action[AssetType.CORPORATE_BONDS], action[AssetType.GOV_BONDS] = CB_qty * 0.2 * abs(np.random.normal() - 0.5), GB_qty * 0.2 * np.random.normal() * abs(np.random.normal() - 0.5)
+        action[AssetType.CORPORATE_BONDS], action[AssetType.GOV_BONDS] = 0.2 * abs(np.random.normal() - 0.5), 0.2 * np.random.normal() * abs(np.random.normal() - 0.5)
         return action
 
     play, max_play = 0, 10
@@ -155,6 +150,12 @@ if __name__ == '__main__':
         actions = {}
         play += 1
         for bank_name, bank in env.allAgents_dict.items():
+            CB_qty = bank.get_ledger().get_asset_valuation_of(Tradable, 1)
+            GB_qty = bank.get_ledger().get_asset_valuation_of(Tradable, 2)
+            equity = bank.get_ledger().get_equity_valuation()
+            lev_ratio_percent = bank.leverageConstraint.get_leverage() * 100
+            print(
+                f'Round {play}. Bank {bank_name}, CB: {int(CB_qty)}, GB: {int(GB_qty)}, EQUITY: {int(equity)}, LEV: {int(lev_ratio_percent)}%')
             actions[bank_name] = stupid_action(bank)  # this is where you use your RLAgents!
         obs, _, _, infos = env.step(actions)
         num_defaults.append(infos['NUM_DEFAULTS'])

@@ -17,19 +17,19 @@ def MA_obs_to_bank_obs(obs, bank):
 
 RLagent_dict = {}
 env = RLModelEnv()
-bank_names = 'AT01 AT02 BE03 BE04 DK05 DK06 DK07 FI08 FR09 FR10 FR11 FR12 FR13 FR14 DE15 DE16 DE17 DE18 DE19 DE20 DE21 DE22 HU23 IE24 IE25 IT26 IT27 IT28 IT29 NL30 NL31 NL32 NL33 NO34 PL35 PL36 ES37 ES38 ES39 ES40 SE41 SE42 SE43 SE44 UK45 UK46 UK47 UK48'.split()
+bank_names = [f'B0{i}' for i in range(1, 5)]
 
 for idx, name in enumerate(bank_names):
     agent = Agent(state_size=3, action_size=2, random_seed=idx, name=name)
     RLagent_dict[name] = agent
 
 average_lifespans = []
-for episode in range(1000):
+for episode in range(10000):
 
     if episode == 0 or episode % 100 == 0:
         print(f'=========================================Episode {episode}===============================================')
     current_obs = env.reset()
-    play, max_play = 0, 15
+    play, max_play = 0, 5
     num_default = []
     while play < max_play:
         actions = {}
@@ -65,7 +65,7 @@ for episode in range(1000):
         num_default.append(infos['NUM_DEFAULTS'])
         play += 1
         if play == max_play:
-            print(infos['AVERAGE_LIFESPAN'])
+            # print(infos['AVERAGE_LIFESPAN'])
             average_lifespans.append(infos['AVERAGE_LIFESPAN'])
 
 setup_matplotlib()
