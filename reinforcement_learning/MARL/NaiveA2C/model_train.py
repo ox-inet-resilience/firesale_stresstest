@@ -17,6 +17,7 @@ def MA_obs_to_bank_obs(obs, bank):
 
 RLagent_dict = {}
 env = RLModelEnv()
+
 bank_names = [f'B0{i}' for i in range(1, 5)]
 
 for idx, name in enumerate(bank_names):
@@ -65,7 +66,6 @@ for episode in range(10000):
         num_default.append(infos['NUM_DEFAULTS'])
         play += 1
         if play == max_play:
-            # print(infos['AVERAGE_LIFESPAN'])
             average_lifespans.append(infos['AVERAGE_LIFESPAN'])
 
 setup_matplotlib()
@@ -73,6 +73,8 @@ average_lifespans = np.array(average_lifespans).reshape((10, 100))
 means_avg_lifespans = np.mean(average_lifespans, axis=1)
 stds_avg_lifespans = np.std(average_lifespans, axis=1)
 plot_custom_errorbar_plot(range(10), means_avg_lifespans, stds_avg_lifespans)
+plt.ylabel('Lifespan')
+plt.xlabel('Hundred episodes')
 plt.savefig('lifespan.png')
 
     # plt.plot(num_default)
