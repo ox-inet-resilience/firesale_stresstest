@@ -17,6 +17,8 @@ def MA_obs_to_bank_obs(obs, bank):
 
 RLagent_dict = {}
 env = RLModelEnv()
+env.parameters.INITIAL_SHOCK = 0.01
+env.parameters.SIMULTANEOUS_FIRESALE = False
 bank_names = 'AT01 AT02 BE03 BE04 DK05 DK06 DK07 FI08 FR09 FR10 FR11 FR12 FR13 FR14 DE15 DE16 DE17 DE18 DE19 DE20 DE21 DE22 HU23 IE24 IE25 IT26 IT27 IT28 IT29 NL30 NL31 NL32 NL33 NO34 PL35 PL36 ES37 ES38 ES39 ES40 SE41 SE42 SE43 SE44 UK45 UK46 UK47 UK48'.split()
 
 for idx, name in enumerate(bank_names):
@@ -72,6 +74,8 @@ average_lifespans = np.array(average_lifespans).reshape((10, 100))
 means_avg_lifespans = np.mean(average_lifespans, axis=1)
 stds_avg_lifespans = np.std(average_lifespans, axis=1)
 plot_custom_errorbar_plot(range(10), means_avg_lifespans, stds_avg_lifespans)
+plt.ylabel('Lifespan')
+plt.xlabel('Hundred episodes')
 plt.savefig('lifespan.png')
 
     # plt.plot(num_default)
