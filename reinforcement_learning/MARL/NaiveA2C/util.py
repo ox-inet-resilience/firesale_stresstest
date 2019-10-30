@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 def setup_matplotlib():
     #pylab.style.use('fivethirtyeight')
@@ -31,5 +32,3 @@ def plot_custom_errorbar_plot(x, y, std, use_marker=True, color=None, marker=Non
     std = np.array(std)
     plt.fill_between(x, y - std, y + std, color=color, alpha=0.4)
     return l
-
-
