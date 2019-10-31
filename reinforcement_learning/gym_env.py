@@ -23,7 +23,7 @@ class RLBank(Bank):
         # 1. Pay off liabilities to delever
         amountToDeLever = self.leverageConstraint.get_amount_to_delever()
         if amountToDeLever > 0:
-            deLever = pay_off_liabilities(self, amountToDeLever)
+            deLever = pay_off_liabilities(self, min(amountToDeLever, balance))
             balance -= deLever
             amountToDeLever -= deLever
 
