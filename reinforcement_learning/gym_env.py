@@ -61,7 +61,8 @@ class RLModelEnv(Model):
         self.allAgents_dict = {}
         self.assetMarket = AssetMarket(self)
         obs = {}
-        with open('EBA_2018.csv', 'r') as data:
+        with open('simple_balance_sheet.csv', 'r') as data:
+        #with open('EBA_2018.csv', 'r') as data:
             self.bank_balancesheets = data.read().strip().split('\n')[1:]
         for bs in self.bank_balancesheets:
             # This steps consist of loading balance sheet from data file
