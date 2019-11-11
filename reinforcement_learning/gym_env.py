@@ -119,8 +119,6 @@ class RLModelEnv(Model):
         random.shuffle(self.allAgents)
         for agent in self.allAgents:
             agent.step()
-        if self.parameters.SIMULTANEOUS_FIRESALE:
-            self.assetMarket.clear_the_market()
         for name, agent in self.allAgents_dict.items():
             if not agent.alive:
                 continue
@@ -135,6 +133,8 @@ class RLModelEnv(Model):
             else:
                 rewards[name] = -10
                 dones[name] = True
+        if self.parameters.SIMULTANEOUS_FIRESALE:
+            self.assetMarket.clear_the_market()
         new_prices = dict(self.assetMarket.prices)
         infos['ASSET_PRICES'], infos['NUM_DEFAULTS'] = new_prices, self.simulation.bank_defaults_this_round
         now = self.get_time()
