@@ -54,6 +54,13 @@ class RLBank(Bank):
             # This is for record keeping.
             self.simulation.bank_defaults_this_round += 1
 
+    def observe(self):
+        A = self.get_ledger().get_asset_valuation()
+        L = self.get_ledger().get_liability_valuation()
+        lev_ratio = (A - L) / A
+        prices = dict(self.model.assetMarket.prices)
+        return prices, A, L, lev_ratio
+
 class RLModelEnv(Model):
     def reset(self):
         self.simulation = Simulation()
@@ -86,7 +93,7 @@ class RLModelEnv(Model):
             bank.get_ledger().set_initial_valuations()  # to calculate initial equity
             self.allAgents.append(bank)
             # RL-specific
-            obs[bank_name] = (dict(self.assetMarket.prices), asset, liability, lev_ratio)
+            obs[bank_name] = bank.observe()
             self.allAgents_dict[bank_name] = bank
         self.apply_initial_shock(
             self.parameters.ASSET_TO_SHOCK,
@@ -114,17 +121,13 @@ class RLModelEnv(Model):
             agent.step()
         if self.parameters.SIMULTANEOUS_FIRESALE:
             self.assetMarket.clear_the_market()
-        new_prices = dict(self.assetMarket.prices)
         for name, agent in self.allAgents_dict.items():
             if not agent.alive:
                 continue
             action = action_dict[name]
             agent.act(action)
             # for observation
-            A = agent.get_ledger().get_asset_valuation()
-            L = agent.get_ledger().get_liability_valuation()
-            lev_ratio = (A - L) / A
-            obs[name] = (new_prices, A, L, lev_ratio)
+            obs[name] = agent.observe()
             if agent.alive:
                 ldg = agent.get_ledger()
                 rewards[name] = 1 + ldg.get_equity_valuation() / ldg.get_initial_equity()
@@ -132,6 +135,7 @@ class RLModelEnv(Model):
             else:
                 rewards[name] = -10
                 dones[name] = True
+        new_prices = dict(self.assetMarket.prices)
         infos['ASSET_PRICES'], infos['NUM_DEFAULTS'] = new_prices, self.simulation.bank_defaults_this_round
         now = self.get_time()
         infos['AVERAGE_LIFESPAN'] = sum(now if a.alive else a.time_of_death for a in self.allAgents) / len(self.allAgents)
