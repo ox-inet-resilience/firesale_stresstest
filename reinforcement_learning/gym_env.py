@@ -4,7 +4,7 @@ import numpy as np
 
 from economicsl import Simulation
 
-from contracts import SellAsset, Tradable, AssetType
+from contracts import SellAsset, Tradable, Loan, AssetType
 from behaviours import pay_off_liabilities
 from institutions import Bank, DefaultException
 from markets import AssetMarket
@@ -14,6 +14,7 @@ class RLBank(Bank):
     def __init__(self, name, simulation):
         super().__init__(name, simulation)
         self.time_of_death = None
+        self.initial_bs = None
 
     def choose_actions(self, action):
         # 0) If I'm insolvent, default.
@@ -50,26 +51,30 @@ class RLBank(Bank):
             # it is best to delay it to the step() stage.
             self.do_trigger_default = True
             self.alive = False
+            self.model.DefaultBanks.append(self.get_name())
             self.time_of_death = self.get_time()
             # This is for record keeping.
             self.simulation.bank_defaults_this_round += 1
 
     def observe(self):
-        A = self.get_ledger().get_asset_valuation()
-        L = self.get_ledger().get_liability_valuation()
-        lev_ratio = (A - L) / A
+        ldg = self.get_ledger()
+        cb = ldg.get_asset_valuation_of(Tradable, 1)
+        gb = ldg.get_asset_valuation_of(Tradable, 2)
+        loan = ldg.get_asset_valuation_of(Loan)
+        lev_ratio = self.leverageConstraint.get_leverage()
         prices = dict(self.model.assetMarket.prices)
-        return prices, A, L, lev_ratio
+        return prices, {'CB': cb, 'GB': gb}, {'LOAN': loan}, lev_ratio, self.initial_bs
 
 class RLModelEnv(Model):
     def reset(self):
         self.simulation = Simulation()
+        self.DefaultBanks = []
         self.allAgents = []
-        self.allAgents_dict = {}
+        self.allAgentBanks = {}
         self.assetMarket = AssetMarket(self)
         obs = {}
-        with open('simple_balance_sheet.csv', 'r') as data:
-        #with open('EBA_2018.csv', 'r') as data:
+        #with open('simple_balance_sheet.csv', 'r') as data:
+        with open('EBA_2018.csv', 'r') as data:
             self.bank_balancesheets = data.read().strip().split('\n')[1:]
         for bs in self.bank_balancesheets:
             # This steps consist of loading balance sheet from data file
@@ -93,8 +98,9 @@ class RLModelEnv(Model):
             bank.get_ledger().set_initial_valuations()  # to calculate initial equity
             self.allAgents.append(bank)
             # RL-specific
+            bank.initial_bs = {'CB': corp_bonds, 'GB': gov_bonds, 'LOAN': loan}
             obs[bank_name] = bank.observe()
-            self.allAgents_dict[bank_name] = bank
+            self.allAgentBanks[bank_name] = bank
         self.apply_initial_shock(
             self.parameters.ASSET_TO_SHOCK,
             self.parameters.INITIAL_SHOCK)
@@ -119,7 +125,7 @@ class RLModelEnv(Model):
         random.shuffle(self.allAgents)
         for agent in self.allAgents:
             agent.step()
-        for name, agent in self.allAgents_dict.items():
+        for name, agent in self.allAgentBanks.items():
             if not agent.alive:
                 continue
             action = action_dict[name]
@@ -136,9 +142,16 @@ class RLModelEnv(Model):
         if self.parameters.SIMULTANEOUS_FIRESALE:
             self.assetMarket.clear_the_market()
         new_prices = dict(self.assetMarket.prices)
-        infos['ASSET_PRICES'], infos['NUM_DEFAULTS'] = new_prices, self.simulation.bank_defaults_this_round
+        infos['ASSET_PRICES'] = new_prices
+        infos['NUM_DEFAULTS'] = len(self.DefaultBanks)
         now = self.get_time()
         infos['AVERAGE_LIFESPAN'] = sum(now if a.alive else a.time_of_death for a in self.allAgents) / len(self.allAgents)
+        infos['TOTAL_EQUITY'] = 0
+        for bank in self.allAgents:
+            if not bank.alive:
+                continue
+            infos['TOTAL_EQUITY'] += bank.get_ledger().get_equity_valuation()
+
         return obs, rewards, dones, infos
 
 if __name__ == '__main__':
@@ -157,7 +170,7 @@ if __name__ == '__main__':
     while play < max_play:
         actions = {}
         play += 1
-        for bank_name, bank in env.allAgents_dict.items():
+        for bank_name, bank in env.allAgentBanks.items():
             actions[bank_name] = stupid_action(bank)  # this is where you use your RLAgents!
         obs, _, _, infos = env.step(actions)
         num_defaults.append(infos['NUM_DEFAULTS'])

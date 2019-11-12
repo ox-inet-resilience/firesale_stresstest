@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
 def setup_matplotlib():
     #pylab.style.use('fivethirtyeight')
     #pylab.style.use('ggplot')
@@ -17,7 +16,7 @@ def setup_matplotlib():
     plt.rc('savefig', dpi=200)
     return _cycler
 
-def plot_custom_errorbar_plot(x, y, std, use_marker=True, color=None, marker=None, label=''):
+def plot_custom_errorbar_plot(x, y, std, use_marker=False, color=None, marker=None, label=''):
     if color is None:
         ax = plt.gca()
         _cc = next(ax._get_lines.prop_cycler)
@@ -32,3 +31,5 @@ def plot_custom_errorbar_plot(x, y, std, use_marker=True, color=None, marker=Non
     std = np.array(std)
     plt.fill_between(x, y - std, y + std, color=color, alpha=0.4)
     return l
+
+
