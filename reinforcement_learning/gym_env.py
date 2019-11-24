@@ -20,7 +20,7 @@ class RLBank(Bank):
         # 0) If I'm insolvent, default.
         if self.is_insolvent():
             raise DefaultException(self, 'SOLVENCY')
-        balance = self.get_cash_()
+        balance = self.get_cash()
         # 1. Pay off liabilities to delever
         amountToDeLever = self.leverageConstraint.get_amount_to_delever()
         if amountToDeLever > 0:
