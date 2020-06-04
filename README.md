@@ -22,7 +22,12 @@ https://eba.europa.eu/risk-analysis-and-data/eu-wide-stress-testing/2018/results
 # Usage
 
 Requires Python 3.
-To run the model as it is:
+1. `pip install -r requirements.txt`
+2. Comment out the line `pylab.ion()` in simulation.py
+3. Add `pylab.show()` at the end of simulation.py
+4. `python3 simulation.py`
+
+To run the model in a Jupyter notebook:
 1. `pip install -r requirements.txt`
 2. Edit `~/.jupyter/jupyter_notebook_config.py` and add this line `c.NotebookApp.contents_manager_class = 'jupytext.TextFileContentsManager'  # noqa`. This is to make sure that model.py can be read as a jupyter notebook
 3. `jupyter notebook`
