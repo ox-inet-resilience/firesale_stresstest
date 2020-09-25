@@ -77,7 +77,7 @@ Each asset has its own price impact parameter, which determines the market liqui
 Asset market:
 - Contains an orderbook
 - Price impact (Cifuentes 2005)
-  - ![price impact formula](https://latex.codecogs.com/svg.latex?p'&space;=&space;p&space;\exp{\left[-\beta&space;\frac{\mathrm{sold}}{\mathrm{marketcap}}\right]})
+  - Price impact formula: `new_price = price * exp(-beta * sold / market_cap)`
   - By default, β is chosen such that when 5% of the market cap is sold, the price drops by 5%.
 
 ### 5. Behaviours
