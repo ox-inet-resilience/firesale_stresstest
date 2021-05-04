@@ -16,6 +16,7 @@ class DefaultException(Exception):
 
 class Bank(Agent):
     def __init__(self, name, simulation):
+        # __init__() is the standard Python method for initializing an object
         super().__init__(name, simulation)
         # `availableActions` is a dictionary (aka hash map in other
         # languages) that has the action types (sell asset, pay loan)
@@ -27,10 +28,7 @@ class Bank(Agent):
         self.do_trigger_default = False
         self.leverageConstraint = BankLeverageConstraint(self)
 
-    def init(self, model, assetMarket, assets, liabilities):
-        # init() is for initializing the balance sheet,
-        # while __init__() is the standard Python method for
-        # initializing an object
+    def initialize_balance_sheet(self, model, assetMarket, assets, liabilities):
         cash, corp_bonds, gov_bonds, other_asset = assets
         loan, other_liability = liabilities
         self.model = model

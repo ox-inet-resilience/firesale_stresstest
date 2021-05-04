@@ -70,7 +70,7 @@ class Model:
             liability = asset - CET1E
             other_asset = asset - debt_sec - cash
             loan = other_liability = liability / 2
-            bank.init(
+            bank.initialize_balance_sheet(
                 self, self.assetMarket,
                 assets=(cash, corp_bonds, gov_bonds, other_asset),
                 liabilities=(loan, other_liability))
