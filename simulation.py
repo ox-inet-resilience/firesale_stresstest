@@ -26,14 +26,14 @@
 import random
 from collections import defaultdict
 
-import pylab
+import matplotlib.pyplot as plt
 import numpy as np
 
 from model import Model, make_plots, run_sim_set
 
-pylab.ion()
-pylab.rcParams['figure.figsize'] = (7.0, 4.8)
-pylab.style.use('ggplot')
+plt.ion()
+plt.rcParams['figure.figsize'] = (7.0, 4.8)
+plt.style.use('ggplot')
 # For reproducibility
 random.seed(1337)
 np.random.seed(1337)
@@ -84,17 +84,17 @@ eocs1, solds1 = run_sim_set(eu, initial_shocks, set_shock)
 eu.parameters.BANK_LEVERAGE_BUFFER = 1
 eocs2, solds2 = run_sim_set(eu, initial_shocks, set_shock)
 
-pylab.figure()
-pylab.ylim(-0.01, 1.05)
-pylab.plot(100 * initial_shocks, eocs1, label='Threshold model')
-pylab.plot(100 * initial_shocks, eocs2, label='Leverage targeting')
-pylab.xlabel('Initial shock (%)')
-pylab.ylabel('Systemic risk $\\mathbb{E}$')
-pylab.legend()
+plt.figure()
+plt.ylim(-0.01, 1.05)
+plt.plot(100 * initial_shocks, eocs1, label='Threshold model')
+plt.plot(100 * initial_shocks, eocs2, label='Leverage targeting')
+plt.xlabel('Initial shock (%)')
+plt.ylabel('Systemic risk $\\mathbb{E}$')
+plt.legend()
 
-pylab.figure()
-pylab.plot(100 * initial_shocks, 100 * solds1, label='Threshold model')
-pylab.plot(100 * initial_shocks, 100 * solds2, label='Leverage targeting')
-pylab.xlabel('Initial shock (%)')
-pylab.ylabel('Proportion of tradable assets delevered (%)')
-pylab.legend()
+plt.figure()
+plt.plot(100 * initial_shocks, 100 * solds1, label='Threshold model')
+plt.plot(100 * initial_shocks, 100 * solds2, label='Leverage targeting')
+plt.xlabel('Initial shock (%)')
+plt.ylabel('Proportion of tradable assets delevered (%)')
+plt.legend()

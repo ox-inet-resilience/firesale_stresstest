@@ -23,8 +23,8 @@ https://eba.europa.eu/risk-analysis-and-data/eu-wide-stress-testing/2018/results
 
 Requires Python 3.
 1. `pip install -r requirements.txt`
-2. Comment out the line `pylab.ion()` in simulation.py
-3. Add `pylab.show()` at the end of simulation.py
+2. Comment out the line `plt.ion()` in simulation.py
+3. Add `plt.show()` at the end of simulation.py
 4. `python3 simulation.py`
 
 To run the model in a Jupyter notebook:

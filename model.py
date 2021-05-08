@@ -1,7 +1,7 @@
 import random
 from collections import defaultdict
 
-import pylab
+import matplotlib.pyplot as plt
 import numpy as np
 
 from economicsl import Simulation
@@ -107,16 +107,16 @@ class Model:
 # + {"slideshow": {"slide_type": "subslide"}}
 # Helper function
 def make_plots(eocs, solds, xarray, xlabel):
-    pylab.figure()
-    pylab.ylim(-0.01, 1.05)
-    pylab.plot(xarray, eocs)
-    pylab.xlabel(xlabel)
-    pylab.ylabel('Systemic risk $\\mathbb{E}$')
+    plt.figure()
+    plt.ylim(-0.01, 1.05)
+    plt.plot(xarray, eocs)
+    plt.xlabel(xlabel)
+    plt.ylabel('Systemic risk $\\mathbb{E}$')
 
-    pylab.figure()
-    pylab.plot(xarray, 100 * solds)
-    pylab.xlabel(xlabel)
-    pylab.ylabel('Proportion of tradable assets delevered (%)')
+    plt.figure()
+    plt.plot(xarray, 100 * solds)
+    plt.xlabel(xlabel)
+    plt.ylabel('Proportion of tradable assets delevered (%)')
 
 def run_sim_set(model, params, apply_param):
     eocs = []
